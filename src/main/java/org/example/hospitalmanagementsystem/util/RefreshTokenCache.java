@@ -20,15 +20,7 @@ public class RefreshTokenCache {
         redisTemplate.opsForValue().set(PREFIX + tokenHash, String.valueOf(userId), ttl);
     }
 
-    public Optional<Long> getUserId(String tokenHash) {
-        String value = redisTemplate.opsForValue().get(PREFIX + tokenHash);
-        return Optional.ofNullable(value).map(Long::parseLong);
-    }
 
-    public boolean exists(String tokenHash) {
-        Boolean result = redisTemplate.hasKey(PREFIX + tokenHash);
-        return Boolean.TRUE.equals(result);
-    }
 
     public void invalidate(String tokenHash) {
         redisTemplate.delete(PREFIX + tokenHash);
