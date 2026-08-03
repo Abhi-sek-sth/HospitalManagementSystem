@@ -57,6 +57,14 @@ public class GlobalExceptionHandler
         );
     }
 
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidRefreshTokenException(InvalidRefreshTokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ex.getMessage())
+        );
+    }
+
+
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
