@@ -2,6 +2,9 @@ package org.example.hospitalmanagementsystem.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+
+@Builder
 
 public record DepartmentRequestDto(
         @NotBlank(message = "Name is required")
