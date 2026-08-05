@@ -1,7 +1,9 @@
 package org.example.hospitalmanagementsystem.dto.response;
 
-import java.time.LocalDateTime;
+import lombok.Builder;
 
+import java.time.LocalDateTime;
+@Builder
 public record DepartmentResponseDto(
 
          Long id,
