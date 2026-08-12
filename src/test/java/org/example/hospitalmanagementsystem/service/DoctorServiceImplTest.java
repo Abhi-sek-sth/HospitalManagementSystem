@@ -1,6 +1,9 @@
 package org.example.hospitalmanagementsystem.service;
 
+
 import org.example.hospitalmanagementsystem.dto.request.DoctorRequestDto;
+import org.example.hospitalmanagementsystem.dto.request.UpdateDoctorRequestDto;
+import org.example.hospitalmanagementsystem.dto.response.DoctorPageResponseDto;
 import org.example.hospitalmanagementsystem.dto.response.DoctorResponseDto;
 import org.example.hospitalmanagementsystem.entity.Department;
 import org.example.hospitalmanagementsystem.entity.Doctor;
@@ -19,9 +22,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,6 +58,7 @@ class DoctorServiceImplTest {
     private DoctorRequestDto doctorRequestDto;
     private DoctorResponseDto doctorResponseDto;
     private Doctor doctor;
+    private UpdateDoctorRequestDto updateDoctorRequestDto;
 
     @BeforeEach
     void setUp(){
@@ -104,6 +113,12 @@ class DoctorServiceImplTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
+        updateDoctorRequestDto = UpdateDoctorRequestDto.builder()
+                .departmentId(2L)
+                .phone("1234567890")
+                .specialization("Neurology")
+                .active(true)
+                .build();
     }
 
     @Nested
@@ -262,6 +277,202 @@ class DoctorServiceImplTest {
             verifyNoInteractions(doctorMapper);
         }
 
+    }
+    @Nested
+    class GetDoctorById{
+        @Test
+        @DisplayName("should return doctor when doctor exists")
+        void shouldReturnDoctorWhenDoctorExists() {
+
+            // Arrange
+            Long doctorId = 1L;
+
+            when(doctorRepository.findById(doctorId))
+                    .thenReturn(Optional.of(doctor));
+
+            when(doctorMapper.toResponseDto(doctor))
+                    .thenReturn(doctorResponseDto);
+
+            // Act
+            DoctorResponseDto result = doctorService.getById(doctorId);
+
+            // Assert
+            assertEquals(doctorResponseDto, result);
+
+            verify(doctorRepository)
+                    .findById(doctorId);
+
+            verify(doctorMapper)
+                    .toResponseDto(doctor);
+        }
+
+        @Test
+        @DisplayName("should throw ResourceNotFound when doctor does not exist")
+        void shouldThrowResourceNotFoundWhenDoctorDoesNotExist() {
+
+            // Arrange
+            Long doctorId = 1L;
+
+            when(doctorRepository.findById(doctorId))
+                    .thenReturn(Optional.empty());
+
+            // Act
+            ResourceNotFound exception = assertThrows(
+                    ResourceNotFound.class,
+                    () -> doctorService.getById(doctorId)
+            );
+
+            // Assert
+            assertEquals("Doctor Not Found", exception.getMessage());
+
+            verify(doctorRepository)
+                    .findById(doctorId);
+
+            verifyNoInteractions(doctorMapper);
+        }
+        @Nested
+        class UpdateDoctor{
+            @Test
+            void shouldUpdateDoctorWhenDoctorExists(){
+                when(doctorRepository.findById(1L))
+                        .thenReturn(Optional.of(doctor));
+
+                when(departmentRepository.findById(2L))
+                        .thenReturn(Optional.of(department));
+
+                when(doctorRepository.save(doctor))
+                        .thenReturn(doctor);
+
+                when(doctorMapper.toResponseDto(doctor))
+                        .thenReturn(doctorResponseDto);
+
+                DoctorResponseDto result = doctorService.update(1L, updateDoctorRequestDto);
+
+                assertEquals(doctorResponseDto, result);
+
+                assertEquals(updateDoctorRequestDto.active(), doctor.getActive());
+                assertEquals(updateDoctorRequestDto.specialization(), doctor.getSpecialization());
+                assertEquals(updateDoctorRequestDto.phone(), doctor.getPhone());
+                assertEquals(department, doctor.getDepartment());
+
+                verify(doctorRepository).findById(1L);
+                verify(departmentRepository).findById(2L);
+                verify(doctorRepository).save(doctor);
+                verify(doctorMapper).toResponseDto(doctor);
+            }
+
+            @Test
+            @DisplayName("should throw ResourceNotFound when doctor does not exist")
+            void shouldThrowResourceNotFoundWhenDoctorDoesNotExist() {
+
+                // ArrangeLong
+
+                when(doctorRepository.findById(1L))
+                        .thenReturn(Optional.empty());
+
+                // Act
+                ResourceNotFound exception = assertThrows(
+                        ResourceNotFound.class,
+                        () -> doctorService.update(1L,updateDoctorRequestDto)
+                );
+
+                // Assert
+                assertEquals("Doctor Not Found", exception.getMessage());
+
+                verify(doctorRepository)
+                        .findById(1L);
+
+                verifyNoInteractions(doctorMapper);
+            }
+
+            @Test
+            @DisplayName("should throw ResourceNotFound when department does not exist")
+            void shouldThrowResourceNotFoundWhenDepartmentDoesNotExist() {
+
+                // ArrangeLong
+                when(doctorRepository.findById(1L))
+                        .thenReturn(Optional.of(doctor));
+
+                when(departmentRepository.findById(2L))
+                        .thenReturn(Optional.empty());
+
+                // Act
+                ResourceNotFound exception = assertThrows(
+                        ResourceNotFound.class,
+                        () -> doctorService.update(1L,updateDoctorRequestDto)
+                );
+
+                // Assert
+                assertEquals("Department Not Found", exception.getMessage());
+
+                verify(doctorRepository).findById(1L);
+                verify(departmentRepository)
+                        .findById(2L);
+
+                verifyNoInteractions(doctorMapper);
+            }
+            @Nested
+            class DeleteDoctor{
+                @Test
+                void shouldDeleteDoctor(){
+                    when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
+
+                    doctorService.delete(1L);
+
+                    verify(doctorRepository).findById(1L);
+                    verify(doctorRepository).delete(doctor);
+
+                }
+                @Test
+                @DisplayName("should throw resource not found exception")
+                void shouldThrowResourceNotFoundExceptionWhenDoctorNotFound(){
+                    when(doctorRepository.findById(1L)).thenReturn(Optional.empty());
+
+                    ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> doctorService.delete(1L));
+
+                    assertEquals("Doctor Not Found",exception.getMessage());
+
+                    verify(doctorRepository).findById(1L);
+                }
+            }
+
+            @Nested
+            @DisplayName("should display all doctors")
+            class getAllDoctors{
+                @Test
+                void shouldGetAllDoctors(){
+                    Page<Doctor> doctorPage = new PageImpl<>(List.of(doctor), PageRequest.of(0,1),1);
+                    when(doctorRepository.findAll(any(Pageable.class)))
+                            .thenReturn(doctorPage);
+
+                    when(doctorMapper.toResponseDto(doctor))
+                            .thenReturn(doctorResponseDto);
+
+
+
+                    DoctorPageResponseDto<DoctorResponseDto> result =
+                            doctorService.getAll(0,1);
+
+                    assertEquals(1, result.totalElements());
+                    assertEquals(1, result.totalPages());
+                    assertEquals(0, result.currentPage());
+
+                    assertEquals(1, result.content().size());
+                    assertEquals(doctorResponseDto, result.content().get(0));
+
+
+                    verify(doctorRepository).findAll(any(Pageable.class));
+                    verify(doctorMapper).toResponseDto(doctor);
+
+
+                    verifyNoMoreInteractions(
+                            doctorRepository,
+                            doctorMapper
+                    );
+                }
+            }
+
+        }
     }
 
 }
