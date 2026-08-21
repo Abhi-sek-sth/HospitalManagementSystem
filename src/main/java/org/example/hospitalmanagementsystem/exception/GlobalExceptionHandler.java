@@ -13,7 +13,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tools.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -52,8 +51,8 @@ public class GlobalExceptionHandler
 
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFound ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage())
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.error(HttpStatus.NOT_FOUND.value(), ex.getMessage())
         );
     }
 
@@ -63,7 +62,33 @@ public class GlobalExceptionHandler
                 ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ex.getMessage())
         );
     }
+        @ExceptionHandler(DoctorInactiveException.class)
+        public ResponseEntity<ApiResponse<Void>> handleDoctorInactiveException(DoctorInactiveException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage())
+            );
+    }
 
+    @ExceptionHandler(TimeAlreadyFinishException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTimeAlreadyFinish(TimeAlreadyFinishException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ApiResponse.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage())
+        );
+
+    }
+    @ExceptionHandler(AccessDeniedExceptionHandler.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedExceptionHandler(AccessDeniedExceptionHandler ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ApiResponse.error(HttpStatus.FORBIDDEN.value(), ex.getMessage())
+        );
+    }
+
+    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidOperationException(InvalidOperationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage())
+        );
+    }
 
     @Override
     public void commence(HttpServletRequest request,
