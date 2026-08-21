@@ -31,6 +31,10 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public PatientResponseDto create(PatientRequestDto requestDto) {
 
+        if(patientRepository.existsByUserId(requestDto.userId())){
+            throw new AlreadyExistException("Patient already exists for this user");
+        }
+
         if (patientRepository.existsByPhone(requestDto.phone())) {
             throw new AlreadyExistException(
                     "Patient with this phone number already exists"
