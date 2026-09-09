@@ -1,10 +1,12 @@
 package org.example.hospitalmanagementsystem.exception;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.hospitalmanagementsystem.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -13,9 +15,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,8 +56,8 @@ public class GlobalExceptionHandler
 
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFound ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage())
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.error(HttpStatus.NOT_FOUND.value(), ex.getMessage())
         );
     }
 
@@ -62,6 +66,65 @@ public class GlobalExceptionHandler
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ex.getMessage())
         );
+    }
+        @ExceptionHandler(DoctorInactiveException.class)
+        public ResponseEntity<ApiResponse<Void>> handleDoctorInactiveException(DoctorInactiveException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                    ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage())
+            );
+    }
+
+    @ExceptionHandler(TimeAlreadyFinishException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTimeAlreadyFinish(TimeAlreadyFinishException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ApiResponse.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage())
+        );
+
+    }
+    @ExceptionHandler(AccessDeniedExceptionHandler.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedExceptionHandler(AccessDeniedExceptionHandler ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ApiResponse.error(HttpStatus.FORBIDDEN.value(), ex.getMessage())
+        );
+    }
+
+    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidOperationException(InvalidOperationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage())
+        );
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ApiResponse<Void>> invalidRequestExceptionHandler(InvalidRequestException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ApiResponse.error(HttpStatus.BAD_REQUEST.value(), ex.getMessage())
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex) {
+
+        String message = "Invalid request body.";
+
+        if (ex.getCause() instanceof InvalidFormatException invalidFormatException) {
+
+            if (invalidFormatException.getTargetType() != null
+                    && invalidFormatException.getTargetType().isEnum()) {
+
+                message = "Invalid value '" + invalidFormatException.getValue()
+                        + "' for " + invalidFormatException.getTargetType().getSimpleName()
+                        + ". Allowed values: "
+                        + Arrays.toString(
+                        invalidFormatException.getTargetType().getEnumConstants()
+                );
+            }
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(HttpStatus.BAD_REQUEST.value(), message));
     }
 
 

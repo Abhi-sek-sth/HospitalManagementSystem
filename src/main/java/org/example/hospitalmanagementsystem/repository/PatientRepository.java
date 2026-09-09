@@ -13,7 +13,6 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     boolean existsByPhoneAndIdNot(String phone, Long id);
 
-    Optional<Patient> findByPhone(String phone);
-
+    boolean existsByUserId(Long id);
 
 }
