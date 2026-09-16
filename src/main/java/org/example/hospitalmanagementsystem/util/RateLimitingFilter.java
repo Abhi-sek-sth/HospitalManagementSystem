@@ -8,29 +8,28 @@ import io.github.bucket4j.distributed.proxy.ProxyManager;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.hospitalmanagementsystem.dto.request.RateLimitPolicy;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
-import java.time.Duration;
-import java.util.Set;
+
+
 
 
 @Component
 public class RateLimitingFilter implements Filter {
 
-    private static final int CAPACITY = 4;
-    private static final Duration REFILL_PERIOD = Duration.ofMinutes(1);
-    private static final Set<String> PROTECTED_PATHS = Set.of("/login");
 
+    private final RateLimitResolver rateLimitResolver;
     private final ProxyManager<String> proxyManager;
 
-    public RateLimitingFilter(ProxyManager<String> proxyManager) {
+    public RateLimitingFilter(ProxyManager<String> proxyManager,RateLimitResolver rateLimitResolver) {
         this.proxyManager = proxyManager;
+        this.rateLimitResolver = rateLimitResolver;
     }
 
-    private BucketConfiguration bucketConfiguration() {
+    private BucketConfiguration bucketConfiguration(RateLimitPolicy policy) {
         return BucketConfiguration.builder()
-                .addLimit(Bandwidth.classic(CAPACITY, Refill.intervally(CAPACITY, REFILL_PERIOD)))
+                .addLimit(Bandwidth.classic(policy.capacity(), Refill.intervally(policy.capacity(), policy.refillPeriod())))
                 .build();
     }
 
@@ -41,13 +40,16 @@ public class RateLimitingFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String path = httpRequest.getRequestURI();
 
-        if (!PROTECTED_PATHS.contains(path.toLowerCase())) {
+        RateLimitPolicy policy = rateLimitResolver.findPolicy(path).orElse(null);
+
+        if (policy == null) {
             chain.doFilter(request, response);
             return;
         }
 
+
         String key = "rl:" + clientKey(httpRequest);
-        Bucket bucket = proxyManager.builder().build(key, this::bucketConfiguration);
+        Bucket bucket = proxyManager.builder().build(key,  () -> bucketConfiguration(policy));
 
         if (bucket.tryConsume(1)) {
             chain.doFilter(request, response);
@@ -64,6 +66,6 @@ public class RateLimitingFilter implements Filter {
         String ip = (forwarded != null && !forwarded.isBlank())
                 ? forwarded.split(",")[0].trim()
                 : request.getRemoteAddr();
-        return ip + ":" + request.getRequestURI();
+        return ip + ":" + request.getMethod() + ":" + request.getRequestURI();
     }
 }
