@@ -102,6 +102,13 @@ public class GlobalExceptionHandler
         );
     }
 
+    @ExceptionHandler(AppointmentNotCompletedException.class)
+    public ResponseEntity<ApiResponse<Void>> appointmentNotCompletedExceptionHandler(AppointmentNotCompletedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage())
+        );
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex) {
