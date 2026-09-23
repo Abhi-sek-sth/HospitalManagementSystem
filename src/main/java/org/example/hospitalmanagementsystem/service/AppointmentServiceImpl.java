@@ -14,6 +14,7 @@ import org.example.hospitalmanagementsystem.mapper.AppointmentMapper;
 import org.example.hospitalmanagementsystem.repository.AppointmentRepository;
 import org.example.hospitalmanagementsystem.repository.DoctorRepository;
 import org.example.hospitalmanagementsystem.repository.PatientRepository;
+import org.example.hospitalmanagementsystem.util.SecurityUtil;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +33,7 @@ public class AppointmentServiceImpl implements AppointmentService{
     private final DoctorRepository doctorRepository;
     private final AppointmentMapper appointmentMapper;
     private final CurrentUserService currentUserService;
+    private final SecurityUtil securityUtil;
     private static final int MAX_PAGE_SIZE = 100;
     @Transactional
     @Override
@@ -253,7 +255,6 @@ try {
                 throw new InvalidOperationException("You can only cancel an appointment while it is still pending");
             }
         } else {
-            // Staff can cancel at any stage except a completed appointment.
             if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
                 throw new InvalidOperationException("Cannot cancel a completed appointment");
             }
@@ -263,5 +264,39 @@ try {
         Appointment saved = appointmentRepository.save(appointment);
 
         return appointmentMapper.toResponseDto(saved);
+    }
+    @Override
+    @Transactional
+    public AppointmentResponseDto updateAppointmentStatus(Long id, AppointmentStatus newStatus) {
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Appointment not found with id: " + id));
+        if(securityUtil.isAdmin()){
+
+        }
+        else if(securityUtil.isDoctor()) {
+            Long userId = securityUtil.getCurrentUserId();
+            Long doctorUserId = appointment.getDoctor().getUser().getId();
+                if (!userId.equals(doctorUserId)) {
+                 throw new AccessDeniedExceptionHandler("You can only update a status for your own appointment");
+            }
+        }
+
+        AppointmentStatus currentStatus = appointment.getStatus();
+
+        boolean validTransition = switch (currentStatus) {
+            case PENDING -> newStatus == AppointmentStatus.CONFIRMED;
+
+            case CONFIRMED -> newStatus == AppointmentStatus.COMPLETED;
+
+            case COMPLETED, CANCELLED, NO_SHOW -> false;
+        };
+
+        if (!validTransition) {
+            throw new InvalidOperationException("Invalid appointment status transition from " + currentStatus + " to " + newStatus);
+        }
+
+        appointment.setStatus(newStatus);
+
+        return appointmentMapper.toResponseDto(appointmentRepository.save(appointment)
+        );
     }
 }
