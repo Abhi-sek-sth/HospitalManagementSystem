@@ -2,6 +2,7 @@ package org.example.hospitalmanagementsystem.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.hospitalmanagementsystem.dto.request.MedicalRecordUpdateRequestDto;
 import org.example.hospitalmanagementsystem.dto.request.MedicalRecordsRequestDto;
 import org.example.hospitalmanagementsystem.dto.response.*;
 import org.example.hospitalmanagementsystem.service.MedicalRecordsService;
@@ -23,7 +24,7 @@ public class MedicalRecordsController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DOCTOR','ROLE_PATIENT)")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DOCTOR','ROLE_PATIENT')")
     public ResponseEntity<ApiResponse<MedicalRecordsResponseDto>> getById(@PathVariable Long id){
         MedicalRecordsResponseDto responseDto = medicalRecordsService.getMedicalRecordById(id);
         return ResponseEntity.ok(ApiResponse.success("Medical Record Retrieve Successfully",responseDto));
@@ -31,7 +32,7 @@ public class MedicalRecordsController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DOCTOR')")
-    public ResponseEntity<ApiResponse<MedicalRecordsResponseDto>> update(@PathVariable Long id, @Valid @RequestBody MedicalRecordsRequestDto medicalRecordsRequestDto) {
+    public ResponseEntity<ApiResponse<MedicalRecordsResponseDto>> update(@PathVariable Long id, @Valid @RequestBody MedicalRecordUpdateRequestDto medicalRecordsRequestDto) {
         MedicalRecordsResponseDto responseDto = medicalRecordsService.updateMedicalRecord(id,medicalRecordsRequestDto);
         return ResponseEntity.ok(ApiResponse.success("Medical Record Update Successfully",responseDto));
     }
@@ -44,14 +45,14 @@ public class MedicalRecordsController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<ApiResponse<PageResponseDto<MedicalRecordsResponseDto>>> getAllRecords(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
         PageResponseDto<MedicalRecordsResponseDto> responseDto = medicalRecordsService.getAllMedicalRecords(page,size);
         return ResponseEntity.ok(ApiResponse.success("Successfully Retrieved all Medical Records",responseDto));
     }
 
     @GetMapping("/byAppointmentId/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_DOCTOR','ROLE_PATIENT)")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_DOCTOR','ROLE_PATIENT')")
     public ResponseEntity<ApiResponse<MedicalRecordsResponseDto>> getByAppointmentId(@PathVariable Long id){
         MedicalRecordsResponseDto responseDto = medicalRecordsService.getMedicalRecordByAppointmentId(id);
         return ResponseEntity.ok(ApiResponse.success("Successfully Retrieved  Medical Records by Appointment Id",responseDto));
