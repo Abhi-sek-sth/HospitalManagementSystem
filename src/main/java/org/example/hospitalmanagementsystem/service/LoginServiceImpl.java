@@ -7,6 +7,7 @@ import org.example.hospitalmanagementsystem.dto.response.LoginResponseDto;
 import org.example.hospitalmanagementsystem.dto.response.RefreshTokenResponseDto;
 import org.example.hospitalmanagementsystem.entity.RefreshToken;
 import org.example.hospitalmanagementsystem.entity.Register;
+import org.example.hospitalmanagementsystem.exception.InvalidCredentials;
 import org.example.hospitalmanagementsystem.exception.InvalidRefreshTokenException;
 import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
 import org.example.hospitalmanagementsystem.repository.RefreshTokenRepository;
@@ -40,15 +41,16 @@ public class LoginServiceImpl implements LoginService {
 
     public LoginResponseDto logIn(LoginRequestDto loginRequestDto) {
 
-        Register register = registerRepository.findByUsername(loginRequestDto.userName())
-                .orElseThrow(() -> new ResourceNotFound("User not found"));
-
+try{
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDto.userName(),
                         loginRequestDto.password())
-        );
+        );}catch (Exception e){
+            throw new InvalidCredentials("Invalid Username or Password");
+        }
 
+        Register register = registerRepository.findByUsername(loginRequestDto.userName()).orElseThrow(() ->  new InvalidCredentials("Invalid Credentials"));
         String role = register.getRole();
 
         String accessToken = jwtUtil.generateToken(register.getId(), role);
@@ -115,9 +117,7 @@ public class LoginServiceImpl implements LoginService {
 
         RefreshToken token = refreshTokenRepository
                 .findByTokenHash(hash)
-                .orElseThrow(() ->
-                        new InvalidRefreshTokenException(
-                                "Refresh token not recognized"));
+                .orElseThrow(() -> new InvalidRefreshTokenException("Refresh token not recognized"));
 
         validateStoredToken(token);
 
@@ -153,9 +153,7 @@ public class LoginServiceImpl implements LoginService {
     }
     private Register getUser(Long userId) {
 
-        return registerRepository.findById(userId)
-                .orElseThrow(() ->
-                        new ResourceNotFound("User not found"));
+        return registerRepository.findById(userId).orElseThrow(() -> new ResourceNotFound("User not found"));
     }
     private void rotateRefreshToken(RefreshToken token) {
 
@@ -167,8 +165,7 @@ public class LoginServiceImpl implements LoginService {
 
         } catch (OptimisticLockingFailureException ex) {
 
-            throw new InvalidRefreshTokenException(
-                    "Refresh token already used");
+            throw new InvalidRefreshTokenException("Refresh token already used");
         }
 
         refreshTokenCache.invalidate(token.getTokenHash());
