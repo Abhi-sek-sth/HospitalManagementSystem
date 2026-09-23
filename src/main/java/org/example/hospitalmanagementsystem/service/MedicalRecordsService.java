@@ -1,5 +1,6 @@
 package org.example.hospitalmanagementsystem.service;
 
+import org.example.hospitalmanagementsystem.dto.request.MedicalRecordUpdateRequestDto;
 import org.example.hospitalmanagementsystem.dto.request.MedicalRecordsRequestDto;
 import org.example.hospitalmanagementsystem.dto.response.DoctorPageResponseDto;
 import org.example.hospitalmanagementsystem.dto.response.DoctorResponseDto;
@@ -17,7 +18,7 @@ public interface MedicalRecordsService {
 
     PageResponseDto<MedicalRecordsResponseDto> getAllMedicalRecords(int page, int size);
 
-    MedicalRecordsResponseDto updateMedicalRecord(Long id, MedicalRecordsRequestDto request);
+    MedicalRecordsResponseDto updateMedicalRecord(Long id, MedicalRecordUpdateRequestDto request);
 
     void deleteMedicalRecord(Long id);
 
