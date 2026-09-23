@@ -109,6 +109,14 @@ public class GlobalExceptionHandler
         );
     }
 
+    @ExceptionHandler(InvalidCredentials.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(InvalidCredentials ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ex.getMessage())
+        );
+
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex) {
