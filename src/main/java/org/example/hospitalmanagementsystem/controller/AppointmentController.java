@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.hospitalmanagementsystem.dto.request.AppointmentRequestDto;
 import org.example.hospitalmanagementsystem.dto.request.AppointmentUpdateRequestDto;
 import org.example.hospitalmanagementsystem.dto.response.*;
+import org.example.hospitalmanagementsystem.entity.AppointmentStatus;
 import org.example.hospitalmanagementsystem.service.AppointmentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -70,6 +71,11 @@ public class AppointmentController {
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<AppointmentResponseDto>> cancel(@PathVariable Long id) {
         AppointmentResponseDto appointmentResponseDto = appointmentService.cancel(id);
+        return ResponseEntity.ok(ApiResponse.success("Successfully update status",appointmentResponseDto));
+    }
+    @PatchMapping("/{id}/{newStatus}")
+    public ResponseEntity<ApiResponse<AppointmentResponseDto>> changeStatus(@PathVariable Long id, @PathVariable AppointmentStatus newStatus) {
+        AppointmentResponseDto appointmentResponseDto = appointmentService.updateAppointmentStatus(id,newStatus);
         return ResponseEntity.ok(ApiResponse.success("Successfully update status",appointmentResponseDto));
     }
 }
