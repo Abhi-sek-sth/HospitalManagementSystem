@@ -1,6 +1,7 @@
 package org.example.hospitalmanagementsystem.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.hospitalmanagementsystem.dto.request.MedicalRecordUpdateRequestDto;
 import org.example.hospitalmanagementsystem.dto.request.MedicalRecordsRequestDto;
 import org.example.hospitalmanagementsystem.dto.response.MedicalRecordsResponseDto;
 import org.example.hospitalmanagementsystem.dto.response.PageResponseDto;
@@ -101,25 +102,28 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     }
     @Transactional
     @Override
-    public MedicalRecordsResponseDto updateMedicalRecord(Long id, MedicalRecordsRequestDto request) {
-        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medical record not found with id: " + id));
+    public MedicalRecordsResponseDto updateMedicalRecord(Long id, MedicalRecordUpdateRequestDto request) {
+
+        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medical record not found"));
 
         Long currentUserId = securityUtil.getCurrentUserId();
+        Long appointmentDoctorUserId = medicalRecord.getAppointment()
+                .getDoctor()
+                .getUser()
+                .getId();
 
-        Long appointmentDoctorUserId = medicalRecord.getAppointment().getDoctor().getUser().getId();
-        if(securityUtil.isAdmin()){
-
-        }
-         else if (securityUtil.isDoctor()) {
-            if (!currentUserId.equals(appointmentDoctorUserId)) {
-                throw new AccessDeniedExceptionHandler("You can only update medical records for your own appointments");
-            }
-        } else  {
+        if (!securityUtil.isAdmin() && !securityUtil.isDoctor()) {
             throw new AccessDeniedExceptionHandler("You do not have permission to update medical records");
         }
+        if (securityUtil.isDoctor() && !currentUserId.equals(appointmentDoctorUserId)) {
+            throw new AccessDeniedExceptionHandler("You can only update medical records for your own appointments");
+        }
 
-        if (!medicalRecord.getAppointment().getId().equals(request.appointmentId())) {
-            throw new InvalidOperationException("Appointment cannot be changed for an existing medical record");
+        if (request.diagnosis() == null
+                && request.symptoms() == null
+                && request.treatment() == null
+                && request.notes() == null) {
+            throw new InvalidOperationException("At least one field must be provided for update");
         }
 
         if (request.diagnosis() != null) {
@@ -135,9 +139,7 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
             medicalRecord.setNotes(request.notes());
         }
 
-        MedicalRecords updatedRecord = medicalRecordsRepository.save(medicalRecord);
-
-        return medicalRecordsMapper.toResponseDto(updatedRecord);
+        return medicalRecordsMapper.toResponseDto(medicalRecordsRepository.save(medicalRecord));
     }
     @Transactional
     @Override
