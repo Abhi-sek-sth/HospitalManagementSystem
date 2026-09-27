@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.hospitalmanagementsystem.dto.request.MedicationRequestDto;
 import org.example.hospitalmanagementsystem.dto.request.MedicationUpdateRequestDto;
+import org.example.hospitalmanagementsystem.dto.response.MedicalRecordsResponseDto;
 import org.example.hospitalmanagementsystem.dto.response.MedicationResponseDto;
 import org.example.hospitalmanagementsystem.dto.response.PageResponseDto;
 import org.example.hospitalmanagementsystem.entity.Medication;
@@ -123,7 +124,7 @@ public class MedicationServiceImpl implements MedicationService {
 
     @Transactional
     @Override
-    public void deactivateMedication(Long id) {
+    public MedicationResponseDto deactivateMedication(Long id) {
         if(!securityUtil.isAdmin()){
             throw new AccessDeniedExceptionHandler("You are not allowed to deactivate medication");
         }
@@ -132,14 +133,16 @@ public class MedicationServiceImpl implements MedicationService {
 
         medication.setActive(false);
 
-        medicationRepository.save(medication);
+       Medication savedDeactiveMedication =  medicationRepository.save(medication);
 
         log.info("Medication deactivated for :id={} ", id);
+
+        return medicationMapper.toResponse(savedDeactiveMedication);
     }
 
     @Transactional
     @Override
-    public void activateMedication(Long id) {
+    public MedicationResponseDto activateMedication(Long id) {
 
         if(!securityUtil.isAdmin()){
             throw new AccessDeniedExceptionHandler("You are not allowed to activate medication");
@@ -149,9 +152,14 @@ public class MedicationServiceImpl implements MedicationService {
 
         medication.setActive(true);
 
-        medicationRepository.save(medication);
+        Medication savedActivatedMedication =medicationRepository.save(medication);
 
-        log.info("Medication activate for :id={} ", id);    }
+        log.info("Medication activated: id={}", id);
+
+        return medicationMapper.toResponse(savedActivatedMedication);
+
+
+    }
 
     @Transactional(readOnly = true)
     @Override

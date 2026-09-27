@@ -17,9 +17,9 @@ public interface MedicationService {
 
     MedicationResponseDto updateMedication(Long id, MedicationUpdateRequestDto request);
 
-    void deactivateMedication(Long id);
+    MedicationResponseDto deactivateMedication(Long id);
 
-    void activateMedication(Long id);
+    MedicationResponseDto activateMedication(Long id);
 
     List<MedicationResponseDto> searchActiveMedications(String name);
 }
