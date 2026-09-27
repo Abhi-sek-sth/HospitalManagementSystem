@@ -402,7 +402,7 @@ public class AppointmentServiceImplTest {
             when(currentUserService.getCurrentUserId()).thenReturn(doctorUserId);
             when(currentUserService.isDoctor()).thenReturn(true);
 
-            AccessDeniedExceptionHandler exceptionHandler = assertThrows(AccessDeniedExceptionHandler.class,() -> appointmentService.getById(1L));
+            ForbiddenOperationException exceptionHandler = assertThrows(ForbiddenOperationException.class,() -> appointmentService.getById(1L));
 
             assertEquals("You are not allowed to access this appointment",exceptionHandler.getMessage());
 
@@ -429,7 +429,7 @@ public class AppointmentServiceImplTest {
             when(currentUserService.isDoctor()).thenReturn(false);
             when(currentUserService.isPatient()).thenReturn(true);
 
-            AccessDeniedExceptionHandler exceptionHandler = assertThrows(AccessDeniedExceptionHandler.class,() -> appointmentService.getById(1L));
+            ForbiddenOperationException exceptionHandler = assertThrows(ForbiddenOperationException.class,() -> appointmentService.getById(1L));
 
             assertEquals("You are not allowed to access this appointment",exceptionHandler.getMessage());
 
@@ -461,7 +461,7 @@ public class AppointmentServiceImplTest {
             when(currentUserService.isDoctor()).thenReturn(false);
             when(currentUserService.isPatient()).thenReturn(false);
 
-            AccessDeniedExceptionHandler accessDeniedExceptionHandler = assertThrows(AccessDeniedExceptionHandler.class, () -> appointmentService.getById(appointmentId));
+            ForbiddenOperationException accessDeniedExceptionHandler = assertThrows(ForbiddenOperationException.class, () -> appointmentService.getById(appointmentId));
             assertEquals("You are not allowed to access this appointment",accessDeniedExceptionHandler.getMessage());
             verify(appointmentMapper, never()).toResponseDto(any());
         }
@@ -517,7 +517,7 @@ public class AppointmentServiceImplTest {
             when(currentUserService.isAdmin()).thenReturn(false);
             when(currentUserService.isReceptionist()).thenReturn(false);
 
-            AccessDeniedExceptionHandler accessDeniedExceptionHandler = assertThrows(AccessDeniedExceptionHandler.class,() -> appointmentService.getAll(0, 1));
+            ForbiddenOperationException accessDeniedExceptionHandler = assertThrows(ForbiddenOperationException.class,() -> appointmentService.getAll(0, 1));
 
            assertEquals("You are not allowed to access all appointments",accessDeniedExceptionHandler.getMessage());
 
@@ -648,7 +648,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isPatient()).thenReturn(true);
                 when(currentUserService.getCurrentUserId()).thenReturn(4L);
 
-                AccessDeniedExceptionHandler accessDeniedExceptionHandler = assertThrows(AccessDeniedExceptionHandler.class,() -> appointmentService.update(1L,appointmentUpdateRequestDto));
+                ForbiddenOperationException accessDeniedExceptionHandler = assertThrows(ForbiddenOperationException.class,() -> appointmentService.update(1L,appointmentUpdateRequestDto));
 
                 assertEquals("You are not allowed to update this appointment",accessDeniedExceptionHandler.getMessage());
 
@@ -678,7 +678,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isDoctor()).thenReturn(true);
                 when(currentUserService.getCurrentUserId()).thenReturn(4L);
 
-                AccessDeniedExceptionHandler accessDeniedExceptionHandler = assertThrows(AccessDeniedExceptionHandler.class,() -> appointmentService.update(1L,appointmentUpdateRequestDto));
+                ForbiddenOperationException accessDeniedExceptionHandler = assertThrows(ForbiddenOperationException.class,() -> appointmentService.update(1L,appointmentUpdateRequestDto));
 
                 assertEquals("You are not allowed to update this appointment",accessDeniedExceptionHandler.getMessage());
 
@@ -852,7 +852,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isAdmin()).thenReturn(false);
                 when(currentUserService.isReceptionist()).thenReturn(false);
 
-                AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class, () -> appointmentService.delete(1L));
+                ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class, () -> appointmentService.delete(1L));
 
                 assertEquals("You are not allowed to delete this appointment", exception.getMessage());
                 verify(appointmentRepository, never()).delete(any());
@@ -933,7 +933,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isReceptionist()).thenReturn(false);
                 when(currentUserService.isPatient()).thenReturn(false);
 
-                AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class, () -> appointmentService.getByPatient(1L, pageable));
+                ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class, () -> appointmentService.getByPatient(1L, pageable));
 
                 assertEquals("You are not allowed to access patient appointments", exception.getMessage());
                 verify(appointmentRepository, never()).findByPatientId(any(), any());
@@ -956,7 +956,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isPatient()).thenReturn(true);
                 when(currentUserService.getCurrentUserId()).thenReturn(2L);
 
-                AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class, () -> appointmentService.getByPatient(1L, pageable));
+                ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class, () -> appointmentService.getByPatient(1L, pageable));
 
                 assertEquals("You are not allowed to access another patient's appointments", exception.getMessage());
                 verify(appointmentRepository, never()).findByPatientId(any(), any());
@@ -1078,7 +1078,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isReceptionist()).thenReturn(false);
                 when(currentUserService.isDoctor()).thenReturn(false);
 
-                AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class, () -> appointmentService.getByDoctor(1L, pageable));
+                ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class, () -> appointmentService.getByDoctor(1L, pageable));
 
                 assertEquals("You are not allowed to access doctor appointments", exception.getMessage());
                 verify(appointmentRepository, never()).findByDoctorId(any(), any());
@@ -1101,7 +1101,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isDoctor()).thenReturn(true);
                 when(currentUserService.getCurrentUserId()).thenReturn(2L);
 
-                AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+                ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                         () -> appointmentService.getByDoctor(1L, pageable));
 
                 assertEquals("You are not allowed to access another doctor appointments", exception.getMessage());
@@ -1214,7 +1214,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isReceptionist()).thenReturn(false);
                 when(currentUserService.isPatient()).thenReturn(false);
 
-                AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class, () -> appointmentService.cancel(1L));
+                ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class, () -> appointmentService.cancel(1L));
 
                 assertEquals("You are not allowed to cancel this appointment", exception.getMessage());
                 verify(appointmentRepository, never()).save(any());
@@ -1237,7 +1237,7 @@ public class AppointmentServiceImplTest {
                 when(currentUserService.isPatient()).thenReturn(true);
                 when(currentUserService.getCurrentUserId()).thenReturn(2L);
 
-                AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class, () -> appointmentService.cancel(1L));
+                ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class, () -> appointmentService.cancel(1L));
 
                 assertEquals("You are not allowed to cancel another patient's appointment", exception.getMessage());
                 verify(appointmentRepository, never()).save(any());

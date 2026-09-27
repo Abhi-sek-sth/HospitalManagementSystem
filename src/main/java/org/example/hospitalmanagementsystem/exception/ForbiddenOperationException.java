@@ -1,7 +1,7 @@
 package org.example.hospitalmanagementsystem.exception;
 
-public class AccessDeniedExceptionHandler extends RuntimeException {
-    public AccessDeniedExceptionHandler(String message) {
+public class ForbiddenOperationException extends RuntimeException {
+    public ForbiddenOperationException(String message) {
         super(message);
     }
 }

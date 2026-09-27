@@ -5,11 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.hospitalmanagementsystem.dto.request.MedicationRequestDto;
 import org.example.hospitalmanagementsystem.dto.request.MedicationUpdateRequestDto;
-import org.example.hospitalmanagementsystem.dto.response.MedicalRecordsResponseDto;
 import org.example.hospitalmanagementsystem.dto.response.MedicationResponseDto;
 import org.example.hospitalmanagementsystem.dto.response.PageResponseDto;
 import org.example.hospitalmanagementsystem.entity.Medication;
-import org.example.hospitalmanagementsystem.exception.AccessDeniedExceptionHandler;
+import org.example.hospitalmanagementsystem.exception.ForbiddenOperationException;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
 import org.example.hospitalmanagementsystem.exception.InvalidOperationException;
 import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
@@ -39,7 +38,7 @@ public class MedicationServiceImpl implements MedicationService {
     @Override
     public MedicationResponseDto createMedication(MedicationRequestDto request) {
         if(!securityUtil.isAdmin()){
-            throw new AccessDeniedExceptionHandler("You are not allowed to create or save medicine");
+            throw new ForbiddenOperationException("You are not allowed to create or save medicine");
         }
         assertNoDuplicate(request.name(), request.manufacturer());
 
@@ -59,7 +58,7 @@ public class MedicationServiceImpl implements MedicationService {
         Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medication not found with id: " + id));
 
         if (!medication.isActive() && !securityUtil.isAdmin()){
-            throw new AccessDeniedExceptionHandler("Currently we don't have this medicine in our store");
+            throw new ForbiddenOperationException("Currently we don't have this medicine in our store");
         }
 
         return medicationMapper.toResponse(medication);
@@ -91,7 +90,7 @@ public class MedicationServiceImpl implements MedicationService {
     @Override
     public MedicationResponseDto updateMedication(Long id, MedicationUpdateRequestDto request) {
         if(!securityUtil.isAdmin()){
-            throw new AccessDeniedExceptionHandler("You are not allowed to update medication");
+            throw new ForbiddenOperationException("You are not allowed to update medication");
         }
 
         Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medication not found with id: " + id));
@@ -125,7 +124,7 @@ public class MedicationServiceImpl implements MedicationService {
     @Override
     public MedicationResponseDto deactivateMedication(Long id) {
         if(!securityUtil.isAdmin()){
-            throw new AccessDeniedExceptionHandler("You are not allowed to deactivate medication");
+            throw new ForbiddenOperationException("You are not allowed to deactivate medication");
         }
 
         Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medication not found with id: " + id));
@@ -144,7 +143,7 @@ public class MedicationServiceImpl implements MedicationService {
     public MedicationResponseDto activateMedication(Long id) {
 
         if(!securityUtil.isAdmin()){
-            throw new AccessDeniedExceptionHandler("You are not allowed to activate medication");
+            throw new ForbiddenOperationException("You are not allowed to activate medication");
         }
 
         Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medication not found with id: " + id));

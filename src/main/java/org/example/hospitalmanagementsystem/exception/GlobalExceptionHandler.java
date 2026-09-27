@@ -81,8 +81,8 @@ public class GlobalExceptionHandler
         );
 
     }
-    @ExceptionHandler(AccessDeniedExceptionHandler.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedExceptionHandler(AccessDeniedExceptionHandler ex) {
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedExceptionHandler(ForbiddenOperationException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 ApiResponse.error(HttpStatus.FORBIDDEN.value(), ex.getMessage())
         );

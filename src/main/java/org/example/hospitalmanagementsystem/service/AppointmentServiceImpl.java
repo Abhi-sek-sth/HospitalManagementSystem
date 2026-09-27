@@ -90,7 +90,7 @@ try {
             boolean isOwner = (currentUserService.isDoctor() && userId.equals(appointment.getDoctor().getUser().getId()))
                     || (currentUserService.isPatient() && userId.equals(appointment.getPatient().getUser().getId()));
             if (!isOwner) {
-                throw new AccessDeniedExceptionHandler("You are not allowed to access this appointment");
+                throw new ForbiddenOperationException("You are not allowed to access this appointment");
             }
         }
         return appointmentMapper.toResponseDto(appointment);
@@ -102,7 +102,7 @@ try {
 
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
         if (!isStaff) {
-            throw new AccessDeniedExceptionHandler("You are not allowed to access all appointments");
+            throw new ForbiddenOperationException("You are not allowed to access all appointments");
         }
 
         int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
@@ -134,7 +134,7 @@ try {
                 || (currentUserService.isDoctor() && userId.equals(appointment.getDoctor().getUser().getId()));
 
         if (!isOwner) {
-            throw new AccessDeniedExceptionHandler("You are not allowed to update this appointment");
+            throw new ForbiddenOperationException("You are not allowed to update this appointment");
         }
 
         if (appointment.getStatus() != AppointmentStatus.PENDING) {
@@ -185,7 +185,7 @@ try {
 
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
         if (!isStaff) {
-            throw new AccessDeniedExceptionHandler("You are not allowed to delete this appointment");
+            throw new ForbiddenOperationException("You are not allowed to delete this appointment");
         }
 
         if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
@@ -202,11 +202,11 @@ try {
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
         if(!isStaff){
             if(!currentUserService.isPatient()) {
-                throw new AccessDeniedExceptionHandler("You are not allowed to access patient appointments");
+                throw new ForbiddenOperationException("You are not allowed to access patient appointments");
             }
         Long userId =  currentUserService.getCurrentUserId();
                 if(!userId.equals(patient.getUser().getId())){
-                    throw new AccessDeniedExceptionHandler("You are not allowed to access another patient's appointments");
+                    throw new ForbiddenOperationException("You are not allowed to access another patient's appointments");
 }}
         return appointmentRepository.findByPatientId(patientId, pageable)
                 .map(appointmentMapper::toResponseDto);
@@ -220,11 +220,11 @@ try {
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
         if(!isStaff){
             if(!currentUserService.isDoctor()) {
-                throw new AccessDeniedExceptionHandler("You are not allowed to access doctor appointments");
+                throw new ForbiddenOperationException("You are not allowed to access doctor appointments");
             }
                 Long userId =  currentUserService.getCurrentUserId();
                 if(!userId.equals(doctor.getUser().getId())){
-                    throw new AccessDeniedExceptionHandler("You are not allowed to access another doctor appointments");
+                    throw new ForbiddenOperationException("You are not allowed to access another doctor appointments");
          }
         }
         return appointmentRepository.findByDoctorId(doctorId, pageable)
@@ -241,14 +241,14 @@ try {
 
         if (!isStaff) {
             if (!currentUserService.isPatient()) {
-                throw new AccessDeniedExceptionHandler("You are not allowed to cancel this appointment");
+                throw new ForbiddenOperationException("You are not allowed to cancel this appointment");
             }
 
             Long userId = currentUserService.getCurrentUserId();
             boolean isOwner = userId.equals(appointment.getPatient().getUser().getId());
 
             if (!isOwner) {
-                throw new AccessDeniedExceptionHandler("You are not allowed to cancel another patient's appointment");
+                throw new ForbiddenOperationException("You are not allowed to cancel another patient's appointment");
             }
 
             if (appointment.getStatus() != AppointmentStatus.PENDING) {
@@ -276,7 +276,7 @@ try {
             Long userId = securityUtil.getCurrentUserId();
             Long doctorUserId = appointment.getDoctor().getUser().getId();
                 if (!userId.equals(doctorUserId)) {
-                 throw new AccessDeniedExceptionHandler("You can only update a status for your own appointment");
+                 throw new ForbiddenOperationException("You can only update a status for your own appointment");
             }
         }
 
