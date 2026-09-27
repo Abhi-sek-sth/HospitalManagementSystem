@@ -23,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Slf4j
 @Service
@@ -163,15 +162,27 @@ public class MedicationServiceImpl implements MedicationService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<MedicationResponseDto> searchActiveMedications(String name) {
-        if(name==null || name.isBlank()){
+    public PageResponseDto<MedicationResponseDto> searchActiveMedications(String name, int page, int size) {
+        if (name == null || name.isBlank()) {
             throw new InvalidOperationException("Medication name must not be empty");
         }
-        return medicationRepository
-                .findByNameContainingIgnoreCaseAndActiveTrue(name)
-                .stream()
-                .map(medicationMapper::toResponse)
-                .toList();
+
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+
+        Pageable pageable = PageRequest.of(safePage, safeSize, Sort.by("name").ascending());
+
+        Page<Medication> medications = medicationRepository.findByNameContainingIgnoreCaseAndActiveTrue(name, pageable);
+
+        return new PageResponseDto<>(
+                medications.getContent()
+                        .stream()
+                        .map(medicationMapper::toResponse)
+                        .toList(),
+                medications.getNumber(),
+                medications.getTotalPages(),
+                medications.getTotalElements()
+        );
     }
 
     private void assertNoDuplicate(String name, String manufacturer) {

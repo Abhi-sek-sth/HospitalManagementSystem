@@ -1,6 +1,5 @@
 package org.example.hospitalmanagementsystem.service;
 
-import org.example.hospitalmanagementsystem.dto.request.MedicalRecordUpdateRequestDto;
 import org.example.hospitalmanagementsystem.dto.request.MedicationRequestDto;
 import org.example.hospitalmanagementsystem.dto.request.MedicationUpdateRequestDto;
 import org.example.hospitalmanagementsystem.dto.response.MedicationResponseDto;
@@ -21,5 +20,5 @@ public interface MedicationService {
 
     MedicationResponseDto activateMedication(Long id);
 
-    List<MedicationResponseDto> searchActiveMedications(String name);
+    PageResponseDto<MedicationResponseDto> searchActiveMedications(String name,int page, int size);
 }

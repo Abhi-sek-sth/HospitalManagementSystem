@@ -60,26 +60,28 @@ public class MedicationController {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<ApiResponse<Void>> deactivateMedication(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<MedicationResponseDto>> deactivateMedication(@PathVariable Long id) {
 
-        medicationService.deactivateMedication(id);
+       MedicationResponseDto responseDto= medicationService.deactivateMedication(id);
 
-        return ResponseEntity.ok(ApiResponse.success("Medication deactivated successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Medication deactivated successfully", responseDto));
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PatchMapping("/{id}/activate")
-    public ResponseEntity<ApiResponse<Void>> activateMedication(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<MedicationResponseDto>> activateMedication(@PathVariable Long id) {
 
-        medicationService.activateMedication(id);
+        MedicationResponseDto responseDto= medicationService.activateMedication(id);
 
-        return ResponseEntity.ok(ApiResponse.success("Medication activated successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("Medication activated successfully", responseDto));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'RECEPTIONIST')")
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<MedicationResponseDto>>> getByName(@RequestParam String name) {
+    public ResponseEntity<ApiResponse<PageResponseDto<MedicationResponseDto>>> getByName(@RequestParam String name,
+                                                                              @RequestParam(defaultValue = "0") int page,
+                                                                              @RequestParam(defaultValue = "20") int size) {
 
-        List<MedicationResponseDto> responseDto =medicationService.searchActiveMedications(name);
+        PageResponseDto<MedicationResponseDto> responseDto =medicationService.searchActiveMedications(name,page, size);
 
         return ResponseEntity.ok(ApiResponse.success("Medication fetched successfully", responseDto));
     }

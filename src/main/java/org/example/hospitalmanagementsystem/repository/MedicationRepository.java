@@ -11,10 +11,7 @@ import java.util.Optional;
 public interface MedicationRepository extends JpaRepository<Medication, Long> {
     boolean existsByNameIgnoreCaseAndManufacturerIgnoreCase(String name, String manufacturer);
 
-    Optional<Medication> findByNameIgnoreCaseAndManufacturerIgnoreCase(String name, String manufacturer);
-
     Page<Medication> findByActiveTrue(Pageable pageable);
 
-    List<Medication> findByNameContainingIgnoreCaseAndActiveTrue(String name);
-
+    Page<Medication> findByNameContainingIgnoreCaseAndActiveTrue(String name, Pageable pageable);
 }
