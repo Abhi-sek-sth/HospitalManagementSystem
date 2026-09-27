@@ -9,7 +9,7 @@ import org.example.hospitalmanagementsystem.dto.response.HospitalInfoResponseDto
 import org.example.hospitalmanagementsystem.dto.response.PageResponseDto;
 import org.example.hospitalmanagementsystem.entity.HospitalInfo;
 import org.example.hospitalmanagementsystem.entity.InformationCategory;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.HospitalInfoMapper;
 import org.example.hospitalmanagementsystem.repository.HospitalInfoRepository;
 import org.example.hospitalmanagementsystem.util.*;
@@ -47,7 +47,7 @@ public class HospitalInfoServiceImpl implements HospitalInfoService {
     @Override
     @Transactional(readOnly = true)
     public HospitalInfoResponseDto getById(Long id) {
-        HospitalInfo information = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Hospital information not found with id: " + id));
+        HospitalInfo information = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hospital information not found with id: " + id));
 
         return hospitalInfoMapper.toResponseDto(information);
     }
@@ -85,7 +85,7 @@ public class HospitalInfoServiceImpl implements HospitalInfoService {
     @Transactional
     @Override
     public HospitalInfoResponseDto update(Long id, HospitalInfoRequestDto requestDto) {
-        HospitalInfo hospitalInfo = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFound("HospitalInfo with id" + id + "Not Found"));
+        HospitalInfo hospitalInfo = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("HospitalInfo with id" + id + "Not Found"));
        try {
            hospitalInfoMapper.updateEntityFromDto(requestDto, hospitalInfo);
        }catch (Exception e){
@@ -101,7 +101,7 @@ public class HospitalInfoServiceImpl implements HospitalInfoService {
     @Transactional
     @Override
     public void deactivate(Long id) {
-        HospitalInfo hospitalInfo = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Id with this hospital information not found"));
+        HospitalInfo hospitalInfo = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id with this hospital information not found"));
 
         hospitalInfo.setActive(false);
         hospitalInfoRepository.save(hospitalInfo);
@@ -118,7 +118,7 @@ public class HospitalInfoServiceImpl implements HospitalInfoService {
     @Transactional
     @Override
     public void activate(Long id) {
-        HospitalInfo hospitalInfo = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Id with this hospital information not found"));
+        HospitalInfo hospitalInfo = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id with this hospital information not found"));
 
         hospitalInfo.setActive(true);
         hospitalInfoRepository.save(hospitalInfo);
@@ -136,7 +136,7 @@ public class HospitalInfoServiceImpl implements HospitalInfoService {
     @Transactional
     @Override
     public void delete(Long id) {
-        HospitalInfo hospitalInfo = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Id with this hospital information not found"));
+        HospitalInfo hospitalInfo = hospitalInfoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id with this hospital information not found"));
         hospitalInfoRepository.delete(hospitalInfo);
         eventPublisher.publishEvent(
                 new HospitalInfoDeleteEvent(hospitalInfo.getId())

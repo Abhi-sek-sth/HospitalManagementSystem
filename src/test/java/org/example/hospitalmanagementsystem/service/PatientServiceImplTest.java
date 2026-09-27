@@ -8,7 +8,7 @@ import org.example.hospitalmanagementsystem.entity.Gender;
 import org.example.hospitalmanagementsystem.entity.Patient;
 import org.example.hospitalmanagementsystem.entity.Register;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.PatientMapper;
 import org.example.hospitalmanagementsystem.repository.PatientRepository;
 import org.example.hospitalmanagementsystem.repository.RegisterRepository;
@@ -185,9 +185,9 @@ class PatientServiceImplTest {
             when(registerRepository.findById(patientRequestDto.userId()))
                     .thenReturn(Optional.empty());
 
-            ResourceNotFound exception =
+            ResourceNotFoundException exception =
                     assertThrows(
-                            ResourceNotFound.class,
+                            ResourceNotFoundException.class,
                             () -> patientService.create(patientRequestDto)
                     );
 
@@ -238,9 +238,9 @@ class PatientServiceImplTest {
             when(patientRepository.findById(1L))
                     .thenReturn(Optional.empty());
 
-            ResourceNotFound exception =
+            ResourceNotFoundException exception =
                     assertThrows(
-                            ResourceNotFound.class,
+                            ResourceNotFoundException.class,
                             () -> patientService.getById(1L)
                     );
 
@@ -436,9 +436,9 @@ class PatientServiceImplTest {
             when(patientRepository.findById(1L))
                     .thenReturn(Optional.empty());
 
-            ResourceNotFound exception =
+            ResourceNotFoundException exception =
                     assertThrows(
-                            ResourceNotFound.class,
+                            ResourceNotFoundException.class,
                             () -> patientService.update(
                                     1L,
                                     patientUpdateRequestDto
@@ -532,9 +532,9 @@ class PatientServiceImplTest {
             when(patientRepository.findById(1L))
                     .thenReturn(Optional.empty());
 
-            ResourceNotFound exception =
+            ResourceNotFoundException exception =
                     assertThrows(
-                            ResourceNotFound.class,
+                            ResourceNotFoundException.class,
                             () -> patientService.delete(1L)
                     );
 

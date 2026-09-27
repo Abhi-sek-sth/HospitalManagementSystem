@@ -184,7 +184,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldThrowResourceNotFoundWhenAppointmentDoesNotExist() {
             when(appointmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> medicalRecordsService.createMedicalRecord(medicalRecordsRequestDto));
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> medicalRecordsService.createMedicalRecord(medicalRecordsRequestDto));
 
             assertEquals("Appointment not found with id: 1", exception.getMessage());
 
@@ -320,7 +320,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldThrowResourceNotFoundWhenRecordDoesNotExist() {
             when(medicalRecordsRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> medicalRecordsService.getMedicalRecordById(1L));
 
             assertEquals("Medical record not found with id: 1", exception.getMessage());
@@ -407,7 +407,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldThrowResourceNotFoundWhenRecordDoesNotExist() {
             when(medicalRecordsRepository.findByAppointmentId(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> medicalRecordsService.getMedicalRecordByAppointmentId(1L));
 
             assertEquals("Medical record not found for appointment id: 1", exception.getMessage());
@@ -549,7 +549,7 @@ public class MedicalRecordsServiceImplTest {
 
             when(medicalRecordsRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> medicalRecordsService.updateMedicalRecord(1L, updateRequest));
 
             assertEquals("Medical record not found", exception.getMessage());
@@ -642,7 +642,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldThrowResourceNotFoundWhenRecordDoesNotExist() {
             when(medicalRecordsRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> medicalRecordsService.deleteMedicalRecord(1L));
 
             assertEquals("Medical record not found with id: 1", exception.getMessage());

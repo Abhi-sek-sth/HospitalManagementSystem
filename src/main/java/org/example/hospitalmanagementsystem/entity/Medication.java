@@ -8,12 +8,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(
-        name = "medications",
-        uniqueConstraints = {@UniqueConstraint(name = "uk_medication_name_manufacturer", columnNames = {"name", "manufacturer"})
-        }
-)
+
 @Getter
 @Setter
 @NoArgsConstructor

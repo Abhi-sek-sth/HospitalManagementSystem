@@ -32,7 +32,7 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Override
     public MedicalRecordsResponseDto createMedicalRecord(MedicalRecordsRequestDto request) {
 
-        Appointment appointment = appointmentRepository.findById(request.appointmentId()).orElseThrow(() -> new ResourceNotFound("Appointment not found with id: " + request.appointmentId()));
+        Appointment appointment = appointmentRepository.findById(request.appointmentId()).orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + request.appointmentId()));
 
         if(appointment.getStatus() != AppointmentStatus.COMPLETED){
             throw new AppointmentNotCompletedException( "Medical record can only be created for a completed appointment");
@@ -67,14 +67,14 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Transactional(readOnly = true)
     @Override
     public MedicalRecordsResponseDto getMedicalRecordById(Long id) {
-        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medical record not found with id: " + id));
+        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medical record not found with id: " + id));
         assertCanView(medicalRecord);
         return medicalRecordsMapper.toResponseDto(medicalRecord);
     }
     @Transactional(readOnly = true)
     @Override
     public MedicalRecordsResponseDto getMedicalRecordByAppointmentId(Long appointmentId) {
-        MedicalRecords medicalRecord = medicalRecordsRepository.findByAppointmentId(appointmentId).orElseThrow(() -> new ResourceNotFound("Medical record not found for appointment id: " + appointmentId));
+        MedicalRecords medicalRecord = medicalRecordsRepository.findByAppointmentId(appointmentId).orElseThrow(() -> new ResourceNotFoundException("Medical record not found for appointment id: " + appointmentId));
         assertCanView(medicalRecord);
         return medicalRecordsMapper.toResponseDto(medicalRecord);
     }
@@ -104,7 +104,7 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Override
     public MedicalRecordsResponseDto updateMedicalRecord(Long id, MedicalRecordUpdateRequestDto request) {
 
-        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medical record not found"));
+        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medical record not found"));
 
         Long currentUserId = securityUtil.getCurrentUserId();
         Long appointmentDoctorUserId = medicalRecord.getAppointment()
@@ -144,7 +144,7 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Transactional
     @Override
     public void deleteMedicalRecord(Long id) {
-        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medical record not found with id: " + id));
+        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medical record not found with id: " + id));
 
         if (!securityUtil.isAdmin()) {
             throw new AccessDeniedExceptionHandler("You do not have permission to delete medical records");

@@ -9,7 +9,7 @@ import org.example.hospitalmanagementsystem.entity.RefreshToken;
 import org.example.hospitalmanagementsystem.entity.Register;
 import org.example.hospitalmanagementsystem.exception.InvalidCredentials;
 import org.example.hospitalmanagementsystem.exception.InvalidRefreshTokenException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.repository.RefreshTokenRepository;
 import org.example.hospitalmanagementsystem.repository.RegisterRepository;
 import org.example.hospitalmanagementsystem.util.JwtUtil;
@@ -153,7 +153,7 @@ try{
     }
     private Register getUser(Long userId) {
 
-        return registerRepository.findById(userId).orElseThrow(() -> new ResourceNotFound("User not found"));
+        return registerRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
     private void rotateRefreshToken(RefreshToken token) {
 

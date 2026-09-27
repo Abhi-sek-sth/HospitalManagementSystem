@@ -47,9 +47,9 @@ public class AppointmentServiceImpl implements AppointmentService{
             );
         }
 
-        Patient patient = patientRepository.findById(requestDto.patientId()).orElseThrow(() -> new ResourceNotFound("Patient Not Found"));
+        Patient patient = patientRepository.findById(requestDto.patientId()).orElseThrow(() -> new ResourceNotFoundException("Patient Not Found"));
 
-        Doctor doctor = doctorRepository.findById(requestDto.doctorId()).orElseThrow(() -> new ResourceNotFound("Doctor Not Found"));
+        Doctor doctor = doctorRepository.findById(requestDto.doctorId()).orElseThrow(() -> new ResourceNotFoundException("Doctor Not Found"));
 
         if (!doctor.getActive()) {
             throw new DoctorInactiveException("Doctor is currently inactive");
@@ -83,7 +83,7 @@ try {
     @Override
     @Transactional(readOnly = true)
     public AppointmentResponseDto getById(Long id) {
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Appointment Not Found"));
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment Not Found"));
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
         if (!isStaff) {
             Long userId = currentUserService.getCurrentUserId();
@@ -125,7 +125,7 @@ try {
 @Transactional
     @Override
     public AppointmentResponseDto update(Long id, AppointmentUpdateRequestDto requestDto) {
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Appointment not found"));
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
 
     boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
     if (!isStaff) {
@@ -181,7 +181,7 @@ try {
     @Transactional
     @Override
     public void delete(Long id) {
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Appointment not found"));
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
 
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
         if (!isStaff) {
@@ -198,7 +198,7 @@ try {
     @Override
     public Page<AppointmentResponseDto> getByPatient(Long patientId, Pageable pageable) {
 
-        Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new ResourceNotFound("Patient not found"));
+        Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
         if(!isStaff){
             if(!currentUserService.isPatient()) {
@@ -215,7 +215,7 @@ try {
     @Transactional(readOnly = true)
     @Override
     public Page<AppointmentResponseDto> getByDoctor(Long doctorId, Pageable pageable) {
-        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFound("Doctor not found"));
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
 
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
         if(!isStaff){
@@ -235,7 +235,7 @@ try {
     @Override
     public AppointmentResponseDto cancel(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound("Appointment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
 
         boolean isStaff = currentUserService.isAdmin() || currentUserService.isReceptionist();
 
@@ -268,7 +268,7 @@ try {
     @Override
     @Transactional
     public AppointmentResponseDto updateAppointmentStatus(Long id, AppointmentStatus newStatus) {
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Appointment not found with id: " + id));
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
         if(securityUtil.isAdmin()){
 
         }

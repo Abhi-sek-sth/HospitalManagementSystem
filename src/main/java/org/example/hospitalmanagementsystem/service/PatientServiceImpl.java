@@ -8,7 +8,7 @@ import org.example.hospitalmanagementsystem.dto.response.PatientResponseDto;
 import org.example.hospitalmanagementsystem.entity.Patient;
 import org.example.hospitalmanagementsystem.entity.Register;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.PatientMapper;
 import org.example.hospitalmanagementsystem.repository.PatientRepository;
 import org.example.hospitalmanagementsystem.repository.RegisterRepository;
@@ -43,7 +43,7 @@ public class PatientServiceImpl implements PatientService {
 
         Register user = registerRepository.findById(requestDto.userId())
                 .orElseThrow(() ->
-                        new ResourceNotFound("User Not Found")
+                        new ResourceNotFoundException("User Not Found")
                 );
 
         Patient patient = patientMapper.toEntity(requestDto);
@@ -61,7 +61,7 @@ public class PatientServiceImpl implements PatientService {
 
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFound("Patient Not Found")
+                        new ResourceNotFoundException("Patient Not Found")
                 );
 
         return patientMapper.toResponseDto(patient);
@@ -99,7 +99,7 @@ public class PatientServiceImpl implements PatientService {
 
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFound("Patient Not Found")
+                        new ResourceNotFoundException("Patient Not Found")
                 );
 
         if (patientRepository.existsByPhoneAndIdNot(
@@ -124,7 +124,7 @@ public class PatientServiceImpl implements PatientService {
 
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFound("Patient Not Found")
+                        new ResourceNotFoundException("Patient Not Found")
                 );
 
         patientRepository.delete(patient);

@@ -7,7 +7,7 @@ import org.example.hospitalmanagementsystem.dto.response.RegisterResponseDto;
 import org.example.hospitalmanagementsystem.entity.Register;
 import org.example.hospitalmanagementsystem.entity.Roles;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.RegisterMapper;
 import org.example.hospitalmanagementsystem.repository.RegisterRepository;
 import org.example.hospitalmanagementsystem.repository.RoleRepository;
@@ -43,7 +43,7 @@ public class RegisterServiceImpl implements RegisterService{
         register.setPassword(passwordEncoder.encode(requestDto.password()));
         register.setCreatedAt(LocalDateTime.now());
 
-        Roles roles = roleRepository.findByRoleName(requestDto.role()).orElseThrow(() -> new ResourceNotFound("Role not Found" + requestDto.role()));
+        Roles roles = roleRepository.findByRoleName(requestDto.role()).orElseThrow(() -> new ResourceNotFoundException("Role not Found" + requestDto.role()));
 
         register.setRole(roles.getRoleName());
 
@@ -71,20 +71,20 @@ public class RegisterServiceImpl implements RegisterService{
 
     @Override
     public void deleteUser(Long id) {
-        Register register = registerRepository.findById(id).orElseThrow(() -> new ResourceNotFound("A user with id" + id + "not found"));
+        Register register = registerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("A user with id" + id + "not found"));
         registerRepository.delete(register);
     }
 
     @Override
     public RegisterResponseDto getById(Long id) {
-        Register register = registerRepository.findById(id).orElseThrow(() -> new ResourceNotFound("A user not found"));
+        Register register = registerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("A user not found"));
         return registerMapper.toResponseDto(register);
 
     }
 
     @Override
     public RegisterResponseDto update(RegisterRequestDto registerRequestDto, Long id) {
-        Register register = registerRepository.findById(id).orElseThrow(() -> new ResourceNotFound("A user not found"));
+        Register register = registerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("A user not found"));
 
         if (!register.getEmail().equals(registerRequestDto.email())
                 && registerRepository.existsByEmail(registerRequestDto.email())) {

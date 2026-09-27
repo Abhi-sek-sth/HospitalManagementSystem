@@ -5,7 +5,7 @@ import org.example.hospitalmanagementsystem.dto.response.DepartmentPageResponseD
 import org.example.hospitalmanagementsystem.dto.response.DepartmentResponseDto;
 import org.example.hospitalmanagementsystem.entity.Department;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.DepartmentMapper;
 import org.example.hospitalmanagementsystem.repository.DepartmentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -201,7 +201,7 @@ class DepartmentServiceImplTest {
             void shouldThrowResourceNotFoundException() {
                 when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-                ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> departmentService.update(1L, updateRequestDto));
+                ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> departmentService.update(1L, updateRequestDto));
 
                 assertEquals("Department not found", exception.getMessage());
                 verify(departmentRepository).findById(1L);
@@ -290,7 +290,7 @@ class DepartmentServiceImplTest {
                 void shouldThrowResourceNotFoundException() {
                     when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-                    ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> departmentService.getById(1L));
+                    ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> departmentService.getById(1L));
 
                     assertEquals("Department not found", exception.getMessage());
                     verify(departmentRepository).findById(1L);
@@ -317,7 +317,7 @@ class DepartmentServiceImplTest {
                     void shouldThrowResourceNotFoundException() {
                         when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-                        ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> departmentService.delete(1L));
+                        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> departmentService.delete(1L));
 
                         assertEquals("Department Not Found", exception.getMessage());
                         verify(departmentRepository).findById(1L);

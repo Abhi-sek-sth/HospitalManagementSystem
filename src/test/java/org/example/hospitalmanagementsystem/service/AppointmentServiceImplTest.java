@@ -201,7 +201,7 @@ public class AppointmentServiceImplTest {
         void patientNotFound(){
             when(patientRepository.findById(appointmentRequestDto.patientId())).thenReturn(Optional.empty());
 
-            ResourceNotFound resourceNotFound = assertThrows(ResourceNotFound.class,() -> appointmentService.create(appointmentRequestDto));
+            ResourceNotFoundException resourceNotFound = assertThrows(ResourceNotFoundException.class,() -> appointmentService.create(appointmentRequestDto));
 
             assertEquals("Patient Not Found",resourceNotFound.getMessage());
 
@@ -223,7 +223,7 @@ public class AppointmentServiceImplTest {
 
             when(doctorRepository.findById(appointmentRequestDto.doctorId())).thenReturn(Optional.empty());
 
-            ResourceNotFound resourceNotFound = assertThrows(ResourceNotFound.class,() -> appointmentService.create(appointmentRequestDto));
+            ResourceNotFoundException resourceNotFound = assertThrows(ResourceNotFoundException.class,() -> appointmentService.create(appointmentRequestDto));
 
             assertEquals("Doctor Not Found",resourceNotFound.getMessage());
 
@@ -441,7 +441,7 @@ public class AppointmentServiceImplTest {
         void shouldThrowResourceNotFoundException(){
             when(appointmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound resourceNotFound = assertThrows(ResourceNotFound.class,() -> appointmentService.getById(1L));
+            ResourceNotFoundException resourceNotFound = assertThrows(ResourceNotFoundException.class,() -> appointmentService.getById(1L));
 
             assertEquals("Appointment Not Found",resourceNotFound.getMessage());
 
@@ -824,7 +824,7 @@ public class AppointmentServiceImplTest {
 
                 when(appointmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-                assertThrows(ResourceNotFound.class, () -> appointmentService.update(1L, appointmentUpdateRequestDto));
+                assertThrows(ResourceNotFoundException.class, () -> appointmentService.update(1L, appointmentUpdateRequestDto));
 
                 verify(appointmentRepository, never()).save(any());
             }
@@ -838,7 +838,7 @@ public class AppointmentServiceImplTest {
             void shouldThrowResourceNotFoundWhenAppointmentDoesNotExist() {
                 when(appointmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-                ResourceNotFound resourceNotFound = assertThrows(ResourceNotFound.class,
+                ResourceNotFoundException resourceNotFound = assertThrows(ResourceNotFoundException.class,
                         () -> appointmentService.delete(1L));
 
                 assertEquals("Appointment not found", resourceNotFound.getMessage());
@@ -911,7 +911,7 @@ public class AppointmentServiceImplTest {
 
                 when(patientRepository.findById(1L)).thenReturn(Optional.empty());
 
-                ResourceNotFound resourceNotFound = assertThrows(ResourceNotFound.class, () -> appointmentService.getByPatient(1L, pageable));
+                ResourceNotFoundException resourceNotFound = assertThrows(ResourceNotFoundException.class, () -> appointmentService.getByPatient(1L, pageable));
 
                 assertEquals("Patient not found", resourceNotFound.getMessage());
                 verify(appointmentRepository, never()).findByPatientId(any(), any());
@@ -1056,7 +1056,7 @@ public class AppointmentServiceImplTest {
 
                 when(doctorRepository.findById(1L)).thenReturn(Optional.empty());
 
-                ResourceNotFound resourceNotFound = assertThrows(ResourceNotFound.class, () -> appointmentService.getByDoctor(1L, pageable));
+                ResourceNotFoundException resourceNotFound = assertThrows(ResourceNotFoundException.class, () -> appointmentService.getByDoctor(1L, pageable));
 
                 assertEquals("Doctor not found", resourceNotFound.getMessage());
                 verify(appointmentRepository, never()).findByDoctorId(any(), any());
@@ -1200,7 +1200,7 @@ public class AppointmentServiceImplTest {
             void shouldThrowResourceNotFoundWhenAppointmentDoesNotExist() {
                 when(appointmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-                ResourceNotFound resourceNotFound = assertThrows(ResourceNotFound.class, () -> appointmentService.cancel(1L));
+                ResourceNotFoundException resourceNotFound = assertThrows(ResourceNotFoundException.class, () -> appointmentService.cancel(1L));
 
                 assertEquals("Appointment not found", resourceNotFound.getMessage());
                 verify(appointmentRepository, never()).save(any());

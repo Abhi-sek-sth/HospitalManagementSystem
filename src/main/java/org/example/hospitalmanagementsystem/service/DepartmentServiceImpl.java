@@ -7,7 +7,7 @@ import org.example.hospitalmanagementsystem.dto.response.DepartmentPageResponseD
 import org.example.hospitalmanagementsystem.dto.response.DepartmentResponseDto;
 import org.example.hospitalmanagementsystem.entity.Department;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.DepartmentMapper;
 import org.example.hospitalmanagementsystem.repository.DepartmentRepository;
 import org.springframework.data.domain.Page;
@@ -35,7 +35,7 @@ public class DepartmentServiceImpl implements DepartmentService{
 
     @Override
     public DepartmentResponseDto update(Long id, DepartmentRequestDto requestDto) {
-        Department existing = departmentRepository.findById(id).orElseThrow(() ->new ResourceNotFound("Department not found"));
+        Department existing = departmentRepository.findById(id).orElseThrow(() ->new ResourceNotFoundException("Department not found"));
         if (!existing.getName().equals(requestDto.name())
                 && departmentRepository.existsByName(requestDto.name())) {
 
@@ -52,7 +52,7 @@ Department saveDepartment = departmentRepository.save(existing);
 
     @Override
     public DepartmentResponseDto getById(Long id) {
-        Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Department not found"));
+        Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department not found"));
         return departmentMapper.toResponse(department);
     }
 
@@ -77,7 +77,7 @@ Department saveDepartment = departmentRepository.save(existing);
 
     @Override
     public void delete(Long id) {
-        Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Department Not Found"));
+        Department department = departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department Not Found"));
 departmentRepository.delete(department);
 
     }

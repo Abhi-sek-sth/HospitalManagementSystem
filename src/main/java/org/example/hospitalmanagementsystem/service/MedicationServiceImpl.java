@@ -11,7 +11,7 @@ import org.example.hospitalmanagementsystem.entity.Medication;
 import org.example.hospitalmanagementsystem.exception.AccessDeniedExceptionHandler;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
 import org.example.hospitalmanagementsystem.exception.InvalidOperationException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.MedicationMapper;
 import org.example.hospitalmanagementsystem.repository.MedicationRepository;
 import org.example.hospitalmanagementsystem.util.SecurityUtil;
@@ -56,7 +56,7 @@ public class MedicationServiceImpl implements MedicationService {
     @Override
     public MedicationResponseDto getMedicationById(Long id) {
 
-        Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medication not found with id: " + id));
+        Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medication not found with id: " + id));
 
         if (!medication.isActive() && !securityUtil.isAdmin()){
             throw new AccessDeniedExceptionHandler("Currently we don't have this medicine in our store");
@@ -94,7 +94,7 @@ public class MedicationServiceImpl implements MedicationService {
             throw new AccessDeniedExceptionHandler("You are not allowed to update medication");
         }
 
-        Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medication not found with id: " + id));
+        Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medication not found with id: " + id));
 
         if (request.name() == null && request.manufacturer() == null && request.unitPrice() == null) {
 
@@ -128,7 +128,7 @@ public class MedicationServiceImpl implements MedicationService {
             throw new AccessDeniedExceptionHandler("You are not allowed to deactivate medication");
         }
 
-        Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medication not found with id: " + id));
+        Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medication not found with id: " + id));
 
         medication.setActive(false);
 
@@ -145,7 +145,7 @@ public class MedicationServiceImpl implements MedicationService {
             throw new AccessDeniedExceptionHandler("You are not allowed to activate medication");
         }
 
-        Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medication not found with id: " + id));
+        Medication medication = medicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medication not found with id: " + id));
 
         medication.setActive(true);
 
