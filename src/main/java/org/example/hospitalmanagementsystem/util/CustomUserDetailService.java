@@ -2,7 +2,7 @@ package org.example.hospitalmanagementsystem.util;
 
 import lombok.RequiredArgsConstructor;
 import org.example.hospitalmanagementsystem.entity.Register;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.repository.RegisterRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -20,7 +20,7 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Register register = registerRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFound("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         return new User(
                 register.getUsername(),

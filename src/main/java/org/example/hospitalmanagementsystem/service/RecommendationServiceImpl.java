@@ -5,7 +5,7 @@ import org.example.hospitalmanagementsystem.dto.request.RecommendedDoctorDto;
 import org.example.hospitalmanagementsystem.dto.response.DoctorRecommendationResponseDto;
 import org.example.hospitalmanagementsystem.entity.Appointment;
 import org.example.hospitalmanagementsystem.entity.Doctor;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.repository.AppointmentRepository;
 import org.example.hospitalmanagementsystem.repository.DepartmentRepository;
 import org.example.hospitalmanagementsystem.repository.DoctorRepository;
@@ -28,12 +28,12 @@ public class RecommendationServiceImpl implements RecommendationService {
     @Transactional(readOnly = true)
     @Override
     public DoctorRecommendationResponseDto recommendSpecialization(Long id) {
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Appointment with id" + id + "Not Found"));
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment with id" + id + "Not Found"));
 
         String problem = appointment.getReason();
 
         if (problem == null || problem.isBlank()) {
-            throw new ResourceNotFound("Appointment does not contain a problem description");
+            throw new ResourceNotFoundException("Appointment does not contain a problem description");
         }
 
         Doctor bookedDoctor = appointment.getDoctor();

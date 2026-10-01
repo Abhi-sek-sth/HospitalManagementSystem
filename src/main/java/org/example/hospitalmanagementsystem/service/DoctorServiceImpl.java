@@ -9,7 +9,7 @@ import org.example.hospitalmanagementsystem.entity.Department;
 import org.example.hospitalmanagementsystem.entity.Doctor;
 import org.example.hospitalmanagementsystem.entity.Register;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.DoctorMapper;
 import org.example.hospitalmanagementsystem.repository.DepartmentRepository;
 import org.example.hospitalmanagementsystem.repository.DoctorRepository;
@@ -37,9 +37,9 @@ public class DoctorServiceImpl implements DoctorService{
             throw new AlreadyExistException("User id already register as a doctor");
         }
 
-        Register user = registerRepository.findById(requestDto.userId()).orElseThrow(() -> new ResourceNotFound("User Not Found"));
+        Register user = registerRepository.findById(requestDto.userId()).orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
 
-        Department department = departmentRepository.findById(requestDto.departmentId()).orElseThrow(() -> new ResourceNotFound("Department Not Found"));
+        Department department = departmentRepository.findById(requestDto.departmentId()).orElseThrow(() -> new ResourceNotFoundException("Department Not Found"));
 
         Doctor doctor = doctorMapper.toEntity(requestDto);
         doctor.setUser(user);
@@ -52,15 +52,15 @@ public class DoctorServiceImpl implements DoctorService{
 
     @Override
     public DoctorResponseDto getById(Long id) {
-        Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Doctor Not Found"));
+        Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Doctor Not Found"));
         return doctorMapper.toResponseDto(doctor);
     }
 
     @Override
     public DoctorResponseDto update(Long id, UpdateDoctorRequestDto requestDto) {
-        Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Doctor Not Found"));
+        Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Doctor Not Found"));
 
-        Department department = departmentRepository.findById(requestDto.departmentId()).orElseThrow(() -> new ResourceNotFound("Department Not Found"));
+        Department department = departmentRepository.findById(requestDto.departmentId()).orElseThrow(() -> new ResourceNotFoundException("Department Not Found"));
 
         doctor.setActive(requestDto.active());
         doctor.setSpecialization(requestDto.specialization());
@@ -73,7 +73,7 @@ public class DoctorServiceImpl implements DoctorService{
 
     @Override
     public void delete(Long id) {
-        Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Doctor Not Found"));
+        Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Doctor Not Found"));
         doctorRepository.delete(doctor);
 
     }

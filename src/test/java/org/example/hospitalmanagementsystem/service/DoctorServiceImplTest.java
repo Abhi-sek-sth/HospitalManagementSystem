@@ -9,7 +9,7 @@ import org.example.hospitalmanagementsystem.entity.Department;
 import org.example.hospitalmanagementsystem.entity.Doctor;
 import org.example.hospitalmanagementsystem.entity.Register;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.DoctorMapper;
 import org.example.hospitalmanagementsystem.repository.DepartmentRepository;
 import org.example.hospitalmanagementsystem.repository.DoctorRepository;
@@ -155,7 +155,7 @@ class DoctorServiceImplTest {
             when(registerRepository.findById(doctorRequestDto.userId())).thenReturn(Optional.empty());
 
 
-            ResourceNotFound result = assertThrows(ResourceNotFound.class,() -> doctorService.create(doctorRequestDto));
+            ResourceNotFoundException result = assertThrows(ResourceNotFoundException.class,() -> doctorService.create(doctorRequestDto));
 
             assertEquals("User Not Found",result.getMessage());
 
@@ -182,8 +182,8 @@ class DoctorServiceImplTest {
             when(departmentRepository.findById(doctorRequestDto.departmentId()))
                     .thenReturn(Optional.empty());
 
-            ResourceNotFound result = assertThrows(
-                    ResourceNotFound.class,
+            ResourceNotFoundException result = assertThrows(
+                    ResourceNotFoundException.class,
                     () -> doctorService.create(doctorRequestDto)
             );
 
@@ -317,8 +317,8 @@ class DoctorServiceImplTest {
                     .thenReturn(Optional.empty());
 
             // Act
-            ResourceNotFound exception = assertThrows(
-                    ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(
+                    ResourceNotFoundException.class,
                     () -> doctorService.getById(doctorId)
             );
 
@@ -371,8 +371,8 @@ class DoctorServiceImplTest {
                         .thenReturn(Optional.empty());
 
                 // Act
-                ResourceNotFound exception = assertThrows(
-                        ResourceNotFound.class,
+                ResourceNotFoundException exception = assertThrows(
+                        ResourceNotFoundException.class,
                         () -> doctorService.update(1L,updateDoctorRequestDto)
                 );
 
@@ -397,8 +397,8 @@ class DoctorServiceImplTest {
                         .thenReturn(Optional.empty());
 
                 // Act
-                ResourceNotFound exception = assertThrows(
-                        ResourceNotFound.class,
+                ResourceNotFoundException exception = assertThrows(
+                        ResourceNotFoundException.class,
                         () -> doctorService.update(1L,updateDoctorRequestDto)
                 );
 
@@ -428,7 +428,7 @@ class DoctorServiceImplTest {
                 void shouldThrowResourceNotFoundExceptionWhenDoctorNotFound(){
                     when(doctorRepository.findById(1L)).thenReturn(Optional.empty());
 
-                    ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> doctorService.delete(1L));
+                    ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> doctorService.delete(1L));
 
                     assertEquals("Doctor Not Found",exception.getMessage());
 

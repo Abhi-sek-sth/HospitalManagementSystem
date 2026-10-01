@@ -5,7 +5,7 @@ import org.example.hospitalmanagementsystem.dto.response.HospitalInfoResponseDto
 import org.example.hospitalmanagementsystem.dto.response.PageResponseDto;
 import org.example.hospitalmanagementsystem.entity.HospitalInfo;
 import org.example.hospitalmanagementsystem.entity.InformationCategory;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.HospitalInfoMapper;
 import org.example.hospitalmanagementsystem.repository.HospitalInfoRepository;
 import org.example.hospitalmanagementsystem.util.HospitalInfoActivateEvent;
@@ -117,7 +117,7 @@ class HospitalInfoServiceImplTest {
         void getById_shouldThrowResourceNotFoundWhenHospitalInfoDoesNotExist() {
             when(hospitalInfoRepository.findById(99L)).thenReturn(Optional.empty());
 
-            ResourceNotFound resourceNotFound = assertThrows(ResourceNotFound.class, () -> hospitalInfoService.getById(99L));
+            ResourceNotFoundException resourceNotFound = assertThrows(ResourceNotFoundException.class, () -> hospitalInfoService.getById(99L));
             assertEquals("Hospital information not found with id: " + 99L, resourceNotFound.getMessage());
 
             verify(hospitalInfoMapper, never()).toResponseDto(any());
@@ -235,7 +235,7 @@ class HospitalInfoServiceImplTest {
             when(hospitalInfoRepository.findById(99L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> hospitalInfoService.update(99L, requestDto))
-                    .isInstanceOf(ResourceNotFound.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("HospitalInfo with id99Not Found");
 
             verify(hospitalInfoRepository, never()).save(any());
@@ -265,7 +265,7 @@ class HospitalInfoServiceImplTest {
             when(hospitalInfoRepository.findById(99L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> hospitalInfoService.deactivate(99L))
-                    .isInstanceOf(ResourceNotFound.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Id with this hospital information not found");
 
             verify(hospitalInfoRepository, never()).save(any());
@@ -296,7 +296,7 @@ class HospitalInfoServiceImplTest {
                     .thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> hospitalInfoService.activate(99L))
-                    .isInstanceOf(ResourceNotFound.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Id with this hospital information not found");
 
             verify(hospitalInfoRepository, never()).save(any());
@@ -323,7 +323,7 @@ class HospitalInfoServiceImplTest {
             when(hospitalInfoRepository.findById(99L)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> hospitalInfoService.delete(99L))
-                    .isInstanceOf(ResourceNotFound.class)
+                    .isInstanceOf(ResourceNotFoundException.class)
                     .hasMessage("Id with this hospital information not found");
 
             verify(hospitalInfoRepository, never()).delete(any());

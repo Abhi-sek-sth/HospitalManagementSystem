@@ -54,8 +54,8 @@ public class GlobalExceptionHandler
         );
     }
 
-    @ExceptionHandler(ResourceNotFound.class)
-    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFound ex) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ApiResponse.error(HttpStatus.NOT_FOUND.value(), ex.getMessage())
         );
@@ -81,8 +81,8 @@ public class GlobalExceptionHandler
         );
 
     }
-    @ExceptionHandler(AccessDeniedExceptionHandler.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedExceptionHandler(AccessDeniedExceptionHandler ex) {
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedExceptionHandler(ForbiddenOperationException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 ApiResponse.error(HttpStatus.FORBIDDEN.value(), ex.getMessage())
         );
@@ -157,27 +157,29 @@ public class GlobalExceptionHandler
 
         objectMapper.writeValue(response.getOutputStream(), apiResponse);
     }
-
-    // 🔥 403 FORBIDDEN (role issue)
     @Override
-    public void handle(HttpServletRequest request,
-                       HttpServletResponse response,
-                       AccessDeniedException ex) throws IOException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex) throws IOException {
 
         response.setContentType("application/json");
         response.setStatus(HttpStatus.FORBIDDEN.value());
 
-        ApiResponse<Void> apiResponse =
-                ApiResponse.error(HttpStatus.FORBIDDEN.value(),
-                        "Access Denied - Insufficient permissions");
+        ApiResponse<Void> apiResponse = ApiResponse.error(HttpStatus.FORBIDDEN.value(), "Access Denied - Insufficient permissions");
 
         objectMapper.writeValue(response.getOutputStream(), apiResponse);
     }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleSpringSecurityAccessDenied(AccessDeniedException ex) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                ApiResponse.error(HttpStatus.FORBIDDEN.value(), "Access Denied - Insufficient permissions")
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        "Internal Server Error")
+                ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal Server Error")
         );
     }
+
 }

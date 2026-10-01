@@ -32,7 +32,7 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Override
     public MedicalRecordsResponseDto createMedicalRecord(MedicalRecordsRequestDto request) {
 
-        Appointment appointment = appointmentRepository.findById(request.appointmentId()).orElseThrow(() -> new ResourceNotFound("Appointment not found with id: " + request.appointmentId()));
+        Appointment appointment = appointmentRepository.findById(request.appointmentId()).orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + request.appointmentId()));
 
         if(appointment.getStatus() != AppointmentStatus.COMPLETED){
             throw new AppointmentNotCompletedException( "Medical record can only be created for a completed appointment");
@@ -48,10 +48,10 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
             Long userId = securityUtil.getCurrentUserId();
             Long doctorUserId = appointment.getDoctor().getUser().getId();
             if (!userId.equals(doctorUserId)) {
-                throw new AccessDeniedExceptionHandler("You can only create a medical record for your own appointment");
+                throw new ForbiddenOperationException("You can only create a medical record for your own appointment");
             }
         }else {
-            throw new AccessDeniedExceptionHandler("You do not have permission to create medical records");
+            throw new ForbiddenOperationException("You do not have permission to create medical records");
         }
 
         MedicalRecords medicalRecords = medicalRecordsMapper.toEntity(request);
@@ -67,14 +67,14 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Transactional(readOnly = true)
     @Override
     public MedicalRecordsResponseDto getMedicalRecordById(Long id) {
-        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medical record not found with id: " + id));
+        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medical record not found with id: " + id));
         assertCanView(medicalRecord);
         return medicalRecordsMapper.toResponseDto(medicalRecord);
     }
     @Transactional(readOnly = true)
     @Override
     public MedicalRecordsResponseDto getMedicalRecordByAppointmentId(Long appointmentId) {
-        MedicalRecords medicalRecord = medicalRecordsRepository.findByAppointmentId(appointmentId).orElseThrow(() -> new ResourceNotFound("Medical record not found for appointment id: " + appointmentId));
+        MedicalRecords medicalRecord = medicalRecordsRepository.findByAppointmentId(appointmentId).orElseThrow(() -> new ResourceNotFoundException("Medical record not found for appointment id: " + appointmentId));
         assertCanView(medicalRecord);
         return medicalRecordsMapper.toResponseDto(medicalRecord);
     }
@@ -82,7 +82,7 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Override
     public PageResponseDto<MedicalRecordsResponseDto> getAllMedicalRecords(int page, int size) {
         if (!securityUtil.isAdmin()) {
-            throw new AccessDeniedExceptionHandler("You do not have permission to view all medical records");
+            throw new ForbiddenOperationException("You do not have permission to view all medical records");
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
@@ -104,7 +104,7 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Override
     public MedicalRecordsResponseDto updateMedicalRecord(Long id, MedicalRecordUpdateRequestDto request) {
 
-        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medical record not found"));
+        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medical record not found"));
 
         Long currentUserId = securityUtil.getCurrentUserId();
         Long appointmentDoctorUserId = medicalRecord.getAppointment()
@@ -113,10 +113,10 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
                 .getId();
 
         if (!securityUtil.isAdmin() && !securityUtil.isDoctor()) {
-            throw new AccessDeniedExceptionHandler("You do not have permission to update medical records");
+            throw new ForbiddenOperationException("You do not have permission to update medical records");
         }
         if (securityUtil.isDoctor() && !currentUserId.equals(appointmentDoctorUserId)) {
-            throw new AccessDeniedExceptionHandler("You can only update medical records for your own appointments");
+            throw new ForbiddenOperationException("You can only update medical records for your own appointments");
         }
 
         if (request.diagnosis() == null
@@ -144,10 +144,10 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
     @Transactional
     @Override
     public void deleteMedicalRecord(Long id) {
-        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Medical record not found with id: " + id));
+        MedicalRecords medicalRecord = medicalRecordsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Medical record not found with id: " + id));
 
         if (!securityUtil.isAdmin()) {
-            throw new AccessDeniedExceptionHandler("You do not have permission to delete medical records");
+            throw new ForbiddenOperationException("You do not have permission to delete medical records");
         }
 
         medicalRecordsRepository.delete(medicalRecord);
@@ -163,7 +163,7 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
         if (securityUtil.isPatient()) {
             Long patientUserId = medicalRecord.getAppointment().getPatient().getUser().getId();
             if (!currentUserId.equals(patientUserId)) {
-                throw new AccessDeniedExceptionHandler("You can only view your own records");
+                throw new ForbiddenOperationException("You can only view your own records");
             }
             return;
         }
@@ -171,13 +171,13 @@ public class MedicalRecordsServiceImpl implements MedicalRecordsService{
         if (securityUtil.isDoctor()) {
             Long doctorUserId = medicalRecord.getAppointment().getDoctor().getUser().getId();
             if (!currentUserId.equals(doctorUserId)) {
-                throw new AccessDeniedExceptionHandler(
+                throw new ForbiddenOperationException(
                         "You can only view a medical record for your own appointment only");
             }
             return;
         }
 
-        throw new AccessDeniedExceptionHandler("You do not have permission to view this medical record");
+        throw new ForbiddenOperationException("You do not have permission to view this medical record");
     }
 
 }

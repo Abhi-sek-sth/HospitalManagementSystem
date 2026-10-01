@@ -184,7 +184,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldThrowResourceNotFoundWhenAppointmentDoesNotExist() {
             when(appointmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> medicalRecordsService.createMedicalRecord(medicalRecordsRequestDto));
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> medicalRecordsService.createMedicalRecord(medicalRecordsRequestDto));
 
             assertEquals("Appointment not found with id: 1", exception.getMessage());
 
@@ -233,7 +233,7 @@ public class MedicalRecordsServiceImplTest {
             when(securityUtil.isDoctor()).thenReturn(true);
             when(securityUtil.getCurrentUserId()).thenReturn(OTHER_USER_ID);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.createMedicalRecord(medicalRecordsRequestDto));
 
             assertEquals("You can only create a medical record for your own appointment", exception.getMessage());
@@ -250,7 +250,7 @@ public class MedicalRecordsServiceImplTest {
             when(securityUtil.isAdmin()).thenReturn(false);
             when(securityUtil.isDoctor()).thenReturn(false);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.createMedicalRecord(medicalRecordsRequestDto));
 
             assertEquals("You do not have permission to create medical records", exception.getMessage());
@@ -320,7 +320,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldThrowResourceNotFoundWhenRecordDoesNotExist() {
             when(medicalRecordsRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> medicalRecordsService.getMedicalRecordById(1L));
 
             assertEquals("Medical record not found with id: 1", exception.getMessage());
@@ -337,7 +337,7 @@ public class MedicalRecordsServiceImplTest {
             when(securityUtil.isAdmin()).thenReturn(false);
             when(securityUtil.isPatient()).thenReturn(true);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.getMedicalRecordById(1L));
 
             assertEquals("You can only view your own records", exception.getMessage());
@@ -355,7 +355,7 @@ public class MedicalRecordsServiceImplTest {
             when(securityUtil.isPatient()).thenReturn(false);
             when(securityUtil.isDoctor()).thenReturn(true);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.getMedicalRecordById(1L));
 
             assertEquals("You can only view a medical record for your own appointment only", exception.getMessage());
@@ -373,7 +373,7 @@ public class MedicalRecordsServiceImplTest {
             when(securityUtil.isPatient()).thenReturn(false);
             when(securityUtil.isDoctor()).thenReturn(false);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.getMedicalRecordById(1L));
 
             assertEquals("You do not have permission to view this medical record", exception.getMessage());
@@ -407,7 +407,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldThrowResourceNotFoundWhenRecordDoesNotExist() {
             when(medicalRecordsRepository.findByAppointmentId(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> medicalRecordsService.getMedicalRecordByAppointmentId(1L));
 
             assertEquals("Medical record not found for appointment id: 1", exception.getMessage());
@@ -424,7 +424,7 @@ public class MedicalRecordsServiceImplTest {
             when(securityUtil.isAdmin()).thenReturn(false);
             when(securityUtil.isPatient()).thenReturn(true);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.getMedicalRecordByAppointmentId(1L));
 
             assertEquals("You can only view your own records", exception.getMessage());
@@ -469,7 +469,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldNotRetrieveAllMedicalRecordsWhenUserIsNotAdmin() {
             when(securityUtil.isAdmin()).thenReturn(false);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.getAllMedicalRecords(0, 5));
 
             assertEquals("You do not have permission to view all medical records", exception.getMessage());
@@ -549,7 +549,7 @@ public class MedicalRecordsServiceImplTest {
 
             when(medicalRecordsRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> medicalRecordsService.updateMedicalRecord(1L, updateRequest));
 
             assertEquals("Medical record not found", exception.getMessage());
@@ -570,7 +570,7 @@ public class MedicalRecordsServiceImplTest {
             when(securityUtil.isAdmin()).thenReturn(false);
             when(securityUtil.isDoctor()).thenReturn(false);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.updateMedicalRecord(1L, updateRequest));
 
             assertEquals("You do not have permission to update medical records", exception.getMessage());
@@ -591,7 +591,7 @@ public class MedicalRecordsServiceImplTest {
             when(securityUtil.isAdmin()).thenReturn(false);
             when(securityUtil.isDoctor()).thenReturn(true);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.updateMedicalRecord(1L, updateRequest));
 
             assertEquals("You can only update medical records for your own appointments", exception.getMessage());
@@ -642,7 +642,7 @@ public class MedicalRecordsServiceImplTest {
         void shouldThrowResourceNotFoundWhenRecordDoesNotExist() {
             when(medicalRecordsRepository.findById(1L)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class,
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
                     () -> medicalRecordsService.deleteMedicalRecord(1L));
 
             assertEquals("Medical record not found with id: 1", exception.getMessage());
@@ -657,7 +657,7 @@ public class MedicalRecordsServiceImplTest {
             when(medicalRecordsRepository.findById(1L)).thenReturn(Optional.of(medicalRecords));
             when(securityUtil.isAdmin()).thenReturn(false);
 
-            AccessDeniedExceptionHandler exception = assertThrows(AccessDeniedExceptionHandler.class,
+            ForbiddenOperationException exception = assertThrows(ForbiddenOperationException.class,
                     () -> medicalRecordsService.deleteMedicalRecord(1L));
 
             assertEquals("You do not have permission to delete medical records", exception.getMessage());

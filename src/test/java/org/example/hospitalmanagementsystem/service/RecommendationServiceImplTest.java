@@ -7,7 +7,7 @@ import org.example.hospitalmanagementsystem.entity.Appointment;
 import org.example.hospitalmanagementsystem.entity.Department;
 import org.example.hospitalmanagementsystem.entity.Doctor;
 import org.example.hospitalmanagementsystem.entity.Register;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFound;
+import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.repository.AppointmentRepository;
 import org.example.hospitalmanagementsystem.repository.DepartmentRepository;
 import org.example.hospitalmanagementsystem.repository.DoctorRepository;
@@ -87,7 +87,7 @@ class RecommendationServiceImplTest {
         void shouldThrowWhenAppointmentNotFound() {
             when(appointmentRepository.findById(APPOINTMENT_ID)).thenReturn(Optional.empty());
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> recommendationService.recommendSpecialization(APPOINTMENT_ID));
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> recommendationService.recommendSpecialization(APPOINTMENT_ID));
 
             assertEquals("Appointment with id" + APPOINTMENT_ID + "Not Found",exception.getMessage());
             verify(medicalSpecializationService, never()).determineSpecialization(anyString());
@@ -99,7 +99,7 @@ class RecommendationServiceImplTest {
         void shouldThrowWhenReasonIsNull() {
             appointment.setReason(null);
             when(appointmentRepository.findById(APPOINTMENT_ID)).thenReturn(Optional.of(appointment));
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> recommendationService.recommendSpecialization(APPOINTMENT_ID));
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> recommendationService.recommendSpecialization(APPOINTMENT_ID));
             assertEquals("Appointment does not contain a problem description",exception.getMessage());
 
 
@@ -112,7 +112,7 @@ class RecommendationServiceImplTest {
             appointment.setReason("   ");
             when(appointmentRepository.findById(APPOINTMENT_ID)).thenReturn(Optional.of(appointment));
 
-            ResourceNotFound exception = assertThrows(ResourceNotFound.class, () -> recommendationService.recommendSpecialization(APPOINTMENT_ID));
+            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> recommendationService.recommendSpecialization(APPOINTMENT_ID));
 
             assertEquals("Appointment does not contain a problem description",exception.getMessage());
 
