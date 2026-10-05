@@ -9,6 +9,7 @@ import org.example.hospitalmanagementsystem.entity.Department;
 import org.example.hospitalmanagementsystem.entity.Doctor;
 import org.example.hospitalmanagementsystem.entity.Register;
 import org.example.hospitalmanagementsystem.exception.AlreadyExistException;
+import org.example.hospitalmanagementsystem.exception.InvalidOperationException;
 import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
 import org.example.hospitalmanagementsystem.mapper.DoctorMapper;
 import org.example.hospitalmanagementsystem.repository.DepartmentRepository;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -95,5 +97,31 @@ public class DoctorServiceImpl implements DoctorService{
 
         );
 
+    }
+
+    @Override
+    @Transactional
+    public void deactivate(Long id) {
+
+        Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id: " + id));
+
+        if (!doctor.getActive()) {
+            throw new InvalidOperationException("Doctor is already inactive");
+        }
+
+        doctor.setActive(false);
+    }
+
+    @Override
+    @Transactional
+    public void activate(Long id) {
+
+        Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id: " + id));
+
+        if (doctor.getActive()) {
+            throw new InvalidOperationException("Doctor is already active");
+        }
+
+        doctor.setActive(true);
     }
 }
