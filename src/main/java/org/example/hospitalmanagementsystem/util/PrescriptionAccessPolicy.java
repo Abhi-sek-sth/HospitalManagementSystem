@@ -6,8 +6,6 @@ import org.example.hospitalmanagementsystem.entity.AppointmentStatus;
 import org.example.hospitalmanagementsystem.entity.Doctor;
 import org.example.hospitalmanagementsystem.exception.AppointmentNotCompletedException;
 import org.example.hospitalmanagementsystem.exception.ForbiddenOperationException;
-import org.example.hospitalmanagementsystem.exception.ResourceNotFoundException;
-import org.example.hospitalmanagementsystem.util.SecurityUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Supplier;
