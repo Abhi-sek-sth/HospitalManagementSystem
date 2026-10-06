@@ -2,10 +2,12 @@ package org.example.hospitalmanagementsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
 @Entity
+@SQLRestriction("deleted = false")
 @Table(
         name = "prescriptions",
         indexes = {
@@ -43,4 +45,12 @@ public class Prescription {
 
     @Version
     private Long version;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean deleted = false;
+
+    private LocalDateTime deletedAt;
+
+    private Long deletedBy;
 }
