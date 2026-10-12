@@ -10,15 +10,13 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "prescription_items")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLRestriction("deleted = false")
-@Table(name = "prescription_items")
-// Indexes/uniqueness: see section 11. The partial unique index
-// (prescription_id, medication_id) WHERE deleted = false cannot be expressed in JPA annotations.
 public class PrescriptionItem {
 
     @Id
@@ -26,6 +24,7 @@ public class PrescriptionItem {
     private Long id;
 
     @Version
+    @Setter(AccessLevel.NONE)
     private Long version;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -53,10 +52,12 @@ public class PrescriptionItem {
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
+    @Setter(AccessLevel.NONE)
     private Instant createdAt;
 
     @UpdateTimestamp
     @Column(nullable = false)
+    @Setter(AccessLevel.NONE)
     private Instant updatedAt;
 
     @Builder.Default
@@ -66,4 +67,10 @@ public class PrescriptionItem {
     private LocalDateTime deletedAt;
 
     private Long deletedBy;
+
+    public void softDelete(Long userId, LocalDateTime when) {
+        this.deleted = true;
+        this.deletedAt = when;
+        this.deletedBy = userId;
+    }
 }
