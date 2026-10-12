@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.hospitalmanagementsystem.entity.Appointment;
 import org.example.hospitalmanagementsystem.entity.AppointmentStatus;
 import org.example.hospitalmanagementsystem.entity.Doctor;
+import org.example.hospitalmanagementsystem.entity.MedicalRecords;
 import org.example.hospitalmanagementsystem.exception.AppointmentNotCompletedException;
 import org.example.hospitalmanagementsystem.exception.ForbiddenOperationException;
 import org.springframework.stereotype.Component;
@@ -30,8 +31,8 @@ public class PrescriptionAccessPolicy {
     }
 
     public void requireParticipant(Appointment appointment, Long userId) {
-        if (!isOwningDoctor(appointment, userId) && !isOwningPatient(appointment, userId)) {
-            throw new ForbiddenOperationException("You are not allowed to access this appointment" );
+        if (appointment == null || (!isOwningDoctor(appointment, userId) && !isOwningPatient(appointment, userId))) {
+            throw new ForbiddenOperationException("You are not allowed to access this appointment");
         }
     }
 
@@ -53,5 +54,25 @@ public class PrescriptionAccessPolicy {
 
     private static boolean isOwningPatient(Appointment appointment, Long userId) {
         return userId.equals(appointment.getPatient().getUser().getId());
+    }
+
+    public void requireCanView(MedicalRecords record, Long userId) {
+        requireParticipant(record.getAppointment(), userId);
+    }
+
+    public void requireCanModify(MedicalRecords record, Long userId, Supplier<String> deniedMessage) {
+        Appointment appointment = appointmentOf(record);
+
+        requireOwningDoctor(appointment, userId, deniedMessage);
+        requireCompleted(appointment);
+        requireActiveDoctor(appointment.getDoctor(), "Doctor is inactive and cannot modify prescriptions");
+    }
+
+    private static Appointment appointmentOf(MedicalRecords record) {
+        Appointment appointment = record.getAppointment();
+        if (appointment == null) {
+            throw new AppointmentNotCompletedException("Your appointment has not been completed yet");
+        }
+        return appointment;
     }
 }
