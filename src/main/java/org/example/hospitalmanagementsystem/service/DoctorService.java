@@ -15,4 +15,8 @@ public interface DoctorService {
     void delete(Long id);
 
     DoctorPageResponseDto<DoctorResponseDto> getAll(int page, int size);
+
+    void deactivate(Long id);
+
+    void activate(Long id);
 }

@@ -55,6 +55,26 @@ public class DoctorController {
         return ResponseEntity.ok(ApiResponse.success("Successfully Retrieved all Doctors",doctorResponseDtoDoctorPageResponseDto));
     }
 
+    @PatchMapping("/{id}/activate")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> activate(@PathVariable Long id) {
+
+        doctorService.activate(id);
+
+        return ResponseEntity.ok(ApiResponse.success( "Doctor activated successfully", null)
+        );
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deactivate(@PathVariable Long id) {
+
+        doctorService.deactivate(id);
+
+        return ResponseEntity.ok(ApiResponse.success( "Doctor deactivated successfully", null)
+        );
+    }
+
 
 
 }

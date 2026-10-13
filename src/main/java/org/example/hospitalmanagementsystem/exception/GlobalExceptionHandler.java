@@ -114,7 +114,13 @@ public class GlobalExceptionHandler
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ex.getMessage())
         );
+    }
 
+    @ExceptionHandler(ActiveItemAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleActiveItemAlreadyExistsException(ActiveItemAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage())
+        );
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
